@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>线索监控工具 · 晒和云创大健康创业园</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: -apple-system,'PingFang SC',sans-serif; background:#f5f7fa; color:#1a1a1a; }
+    .header { background:#1a6b3c; color:#fff; padding:16px 24px; display:flex; align-items:center; justify-content:space-between; }
+    .header h1 { font-size:18px; }
+    .header a { color:#fff; font-size:13px; opacity:.8; }
+    .container { max-width:1000px; margin:0 auto; padding:24px; }
+    .card { background:#fff; border-radius:12px; padding:24px; margin-bottom:20px; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+    .card h2 { font-size:16px; font-weight:700; margin-bottom:16px; color:#1a6b3c; border-left:3px solid #1a6b3c; padding-left:10px; }
+    .kw-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px; }
+    .kw-btn { background:#f0f9f4; border:1px solid #c8e6d4; border-radius:6px; padding:8px 12px; font-size:13px; cursor:pointer; text-align:center; color:#1a6b3c; }
+    .kw-btn:hover { background:#1a6b3c; color:#fff; }
+    .platform-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    @media(min-width:600px){ .platform-grid { grid-template-columns:repeat(4,1fr); } }
+    .platform-btn { display:block; background:#fff; border:1px solid #e0e0e0; border-radius:8px; padding:14px; text-align:center; font-size:13px; font-weight:600; color:#333; text-decoration:none; }
+    .platform-btn:hover { border-color:#1a6b3c; color:#1a6b3c; }
+    .platform-icon { font-size:24px; display:block; margin-bottom:6px; }
+    .scripts { display:grid; gap:12px; }
+    .script-item { background:#f8fffe; border:1px solid #d4edda; border-radius:8px; padding:16px; }
+    .script-item h4 { font-size:13px; color:#1a6b3c; margin-bottom:8px; font-weight:700; }
+    .script-item p { font-size:13px; color:#444; line-height:1.7; white-space:pre-wrap; }
+    .copy-btn { margin-top:8px; background:#1a6b3c; color:#fff; border:none; border-radius:4px; padding:6px 14px; font-size:12px; cursor:pointer; }
+    .copy-btn:hover { background:#145530; }
+    .form-grid { display:grid; gap:14px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media(max-width:600px){ .form-row { grid-template-columns:1fr; } }
+    label { font-size:13px; color:#555; display:block; margin-bottom:4px; }
+    input, select, textarea { width:100%; border:1px solid #ddd; border-radius:6px; padding:10px 12px; font-size:14px; font-family:inherit; }
+    input:focus, select:focus, textarea:focus { outline:none; border-color:#1a6b3c; }
+    .submit-btn { background:#1a6b3c; color:#fff; border:none; border-radius:8px; padding:14px 32px; font-size:15px; font-weight:700; cursor:pointer; width:100%; margin-top:8px; }
+    .submit-btn:hover { background:#145530; }
+    .submit-btn:disabled { background:#aaa; cursor:not-allowed; }
+    .msg { padding:12px 16px; border-radius:6px; font-size:14px; margin-top:12px; display:none; }
+    .msg.ok { background:#d4edda; color:#155724; }
+    .msg.err { background:#f8d7da; color:#721c24; }
+    .active-kw { background:#1a6b3c !important; color:#fff !important; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔍 线索监控工具 · 晒和云创大健康创业园</h1>
+  <a href="../index.html">← 返回官网</a>
+</div>
+
+<div class="container">
+
+  <!-- 关键词 -->
+  <div class="card">
+    <h2>📌 监控关键词（点击复制）</h2>
+    <div class="kw-grid" id="kwGrid"></div>
+  </div>
+
+  <!-- 平台搜索 -->
+  <div class="card">
+    <h2>🔎 一键跳转平台搜索</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:14px;">先点击关键词，再点击平台按钮，直接跳转搜索结果</p>
+    <div class="platform-grid">
+      <a id="link-xhs" href="#" target="_blank" class="platform-btn" onclick="return openPlatform('xhs')">
+        <span class="platform-icon">📕</span>小红书
+      </a>
+      <a id="link-dy" href="#" target="_blank" class="platform-btn" onclick="return openPlatform('dy')">
+        <span class="platform-icon">🎵</span>抖音
+      </a>
+      <a id="link-wb" href="#" target="_blank" class="platform-btn" onclick="return openPlatform('wb')">
+        <span class="platform-icon">🐦</span>微博
+      </a>
+      <a id="link-tb" href="#" target="_blank" class="platform-btn" onclick="return openPlatform('tb')">
+        <span class="platform-icon">💬</span>百度贴吧
+      </a>
+    </div>
+  </div>
+
+  <!-- 话术 -->
+  <div class="card">
+    <h2>💬 回复话术库</h2>
+    <div class="scripts">
+      <div class="script-item">
+        <h4>通用版</h4>
+        <p id="s1">您好！看到您在找办公室，我们晒和云创大健康创业园在杭州西湖区，综合型创业园，多行业均可入驻。共享工位/独立办公室/整层空间都有，拎包入驻，可注册地址，3个月起租，价格灵活。有兴趣可以来实地看看，电话/微信：13858129096，发"西湖看房"预约即可 😊</p>
+        <button class="copy-btn" onclick="copyScript('s1')">复制话术</button>
+      </div>
+      <div class="script-item">
+        <h4>大健康/医疗行业版</h4>
+        <p id="s2">您好！我们晒和云创大健康创业园专为大健康、医疗、康养类企业提供优质办公空间，位于杭州西湖区，配套完善，可注册地址，拎包入驻。独立办公室10㎡起，适合初创到成长期各阶段企业。欢迎来电咨询：13858129096（微信同号）</p>
+        <button class="copy-btn" onclick="copyScript('s2')">复制话术</button>
+      </div>
+      <div class="script-item">
+        <h4>初创团队版</h4>
+        <p id="s3">您好！创业初期资金有限，我们晒和云创大健康创业园有共享工位和小型独立办公室，3个月起租，押一付三，拎包入驻零装修成本，还可以提供工商注册地址。西湖区地段，交通方便。有需要可以来看看，13858129096（电话/微信）</p>
+        <button class="copy-btn" onclick="copyScript('s3')">复制话术</button>
+      </div>
+      <div class="script-item">
+        <h4>成长型企业版</h4>
+        <p id="s4">您好！如果团队在扩张，我们晒和云创大健康创业园有100㎡以上整层空间，可按需改造，长租享优惠。位于杭州西湖区，配套齐全，24小时安保，可注册地址。欢迎预约实地参观，电话/微信：13858129096</p>
+        <button class="copy-btn" onclick="copyScript('s4')">复制话术</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 线索表单 -->
+  <div class="card">
+    <h2>📝 提交线索</h2>
+    <div class="form-grid">
+      <div class="form-row">
+        <div>
+          <label>联系人姓名 *</label>
+          <input type="text" id="f-name" placeholder="客户姓名">
+        </div>
+        <div>
+          <label>联系电话 *</label>
+          <input type="tel" id="f-phone" placeholder="手机号码">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>需求面积</label>
+          <input type="text" id="f-area" placeholder="如：20㎡、50㎡以上">
+        </div>
+        <div>
+          <label>来源平台</label>
+          <select id="f-platform">
+            <option value="小红书">小红书</option>
+            <option value="抖音">抖音</option>
+            <option value="微博">微博</option>
+            <option value="百度贴吧">百度贴吧</option>
+            <option value="58同城">58同城</option>
+            <option value="百度搜索">百度搜索</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>帖子链接（可选）</label>
+        <input type="url" id="f-url" placeholder="https://...">
+      </div>
+      <div>
+        <label>备注说明</label>
+        <textarea id="f-desc" rows="3" placeholder="客户需求描述、意向程度等"></textarea>
+      </div>
+      <button class="submit-btn" id="submitBtn" onclick="submitLead()">提交线索到飞书</button>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const FEISHU_WEBHOOK = 'https://open.feishu.cn/open-apis/bot/v2/hook/abd71fb1-47f9-4d7d-a5fc-623b36a18f37';
+const BITABLE_WORKER = 'https://feishu-lead-writer.huwenshu.workers.dev';
+
+const KEYWORDS = [
+  '西湖区办公室出租','西湖区工位租赁','西湖区创业园','杭州西湖区办公室',
+  '西湖区注册地址','杭州办公室出租','杭州创业园工位','西湖区小型办公室',
+  '杭州西湖区租办公室','大健康创业园','晒和云创','西湖区商务中心',
+  '杭州工位出租','西湖区联合办公','杭州注册地址办公室'
+];
+
+let selectedKw = KEYWORDS[0];
+
+const grid = document.getElementById('kwGrid');
+KEYWORDS.forEach((kw, i) => {
+  const btn = document.createElement('div');
+  btn.className = 'kw-btn' + (i === 0 ? ' active-kw' : '');
+  btn.textContent = kw;
+  btn.onclick = () => {
+    document.querySelectorAll('.kw-btn').forEach(b => b.classList.remove('active-kw'));
+    btn.classList.add('active-kw');
+    selectedKw = kw;
+    navigator.clipboard.writeText(kw).catch(()=>{});
+  };
+  grid.appendChild(btn);
+});
+
+function openPlatform(p) {
+  const kw = encodeURIComponent(selectedKw);
+  const urls = {
+    xhs: 'https://www.xiaohongshu.com/search_result?keyword=' + kw,
+    dy:  'https://www.douyin.com/search/' + kw,
+    wb:  'https://s.weibo.com/weibo?q=' + kw,
+    tb:  'https://tieba.baidu.com/f/search/res?qw=' + kw,
+  };
+  window.open(urls[p], '_blank');
+  return false;
+}
+
+function copyScript(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    event.target.textContent = '已复制 ✓';
+    setTimeout(() => event.target.textContent = '复制话术', 2000);
+  });
+}
+
+async function submitLead() {
+  const name = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  if (!name || !phone) { showMsg('请填写联系人和电话', false); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = '提交中...';
+
+  const area = document.getElementById('f-area').value.trim();
+  const platform = document.getElementById('f-platform').value;
+  const url = document.getElementById('f-url').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+
+  const webhookBody = {
+    msg_type: 'text',
+    content: { text: `【新线索】晒和云创大健康创业园\n联系人：${name}\n电话：${phone}\n面积需求：${area||'未填'}\n来源：${platform}\n备注：${desc||'无'}${url?'\n链接：'+url:''}` }
+  };
+  const workerBody = { username: name, phone, region: '晒和云创大健康创业园', area, platform, desc, url };
+
+  try {
+    await Promise.all([
+      fetch(FEISHU_WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(webhookBody), mode:'no-cors' }),
+      fetch(BITABLE_WORKER, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(workerBody) })
+    ]);
+    showMsg('提交成功！线索已推送到飞书群和多维表格 ✓', true);
+    ['f-name','f-phone','f-area','f-url','f-desc'].forEach(id => document.getElementById(id).value = '');
+  } catch(e) {
+    showMsg('提交失败：' + e.message, false);
+  } finally {
+    btn.disabled = false; btn.textContent = '提交线索到飞书';
+  }
+}
+
+function showMsg(text, ok) {
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+</script>
+</body>
+</html>

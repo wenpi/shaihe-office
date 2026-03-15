@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>晒和云创大健康创业园 · SEO获客方案</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,'PingFang SC',sans-serif; background:#0f172a; color:#f1f5f9; overflow:hidden; }
+    .slides { width:100vw; height:100vh; position:relative; }
+    .slide { position:absolute; inset:0; display:none; flex-direction:column; justify-content:center; align-items:center; padding:60px; opacity:0; transition:opacity .4s; }
+    .slide.active { display:flex; opacity:1; }
+    .nav { position:fixed; bottom:32px; left:50%; transform:translateX(-50%); display:flex; gap:12px; z-index:100; }
+    .nav button { background:rgba(255,255,255,.15); border:none; color:#fff; padding:10px 24px; border-radius:24px; cursor:pointer; font-size:14px; backdrop-filter:blur(8px); transition:background .2s; }
+    .nav button:hover { background:rgba(255,255,255,.3); }
+    .progress { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,#16a34a,#06b6d4); transition:width .4s; }
+    .slide-num { position:fixed; top:20px; right:28px; font-size:13px; color:#64748b; }
+    .tag { font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#16a34a; margin-bottom:16px; }
+    h1 { font-size:clamp(32px,5vw,56px); font-weight:800; line-height:1.15; text-align:center; }
+    h2 { font-size:clamp(24px,3.5vw,40px); font-weight:700; margin-bottom:12px; }
+    .sub { font-size:18px; color:#94a3b8; margin-top:16px; text-align:center; max-width:640px; line-height:1.7; }
+    .gradient { background:linear-gradient(135deg,#16a34a,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .cards { display:grid; gap:20px; width:100%; max-width:960px; }
+    .cards.col2 { grid-template-columns:1fr 1fr; }
+    .cards.col3 { grid-template-columns:1fr 1fr 1fr; }
+    .card { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:28px; }
+    .card-icon { font-size:32px; margin-bottom:12px; }
+    .card h3 { font-size:18px; margin-bottom:8px; }
+    .card p { font-size:14px; color:#94a3b8; line-height:1.6; }
+    .flow { display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center; max-width:900px; }
+    .flow-item { background:rgba(22,163,74,.2); border:1px solid #16a34a; border-radius:12px; padding:16px 24px; text-align:center; min-width:120px; }
+    .flow-item .fi-icon { font-size:24px; }
+    .flow-item .fi-label { font-size:13px; margin-top:6px; color:#bbf7d0; }
+    .arrow { font-size:20px; color:#475569; }
+    .list { max-width:720px; width:100%; }
+    .list-item { display:flex; gap:16px; align-items:flex-start; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+    .list-item:last-child { border-bottom:none; }
+    .list-num { width:32px; height:32px; border-radius:50%; background:#16a34a; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
+    .list-text h4 { font-size:16px; margin-bottom:4px; }
+    .list-text p { font-size:13px; color:#94a3b8; }
+    .result-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; max-width:900px; width:100%; }
+    .result-item { background:rgba(6,182,212,.1); border:1px solid rgba(6,182,212,.3); border-radius:12px; padding:20px; }
+    .result-item .label { font-size:12px; color:#67e8f9; margin-bottom:8px; }
+    .result-item .value { font-size:22px; font-weight:700; }
+    .result-item .desc { font-size:13px; color:#94a3b8; margin-top:4px; }
+    .cta-box { background:linear-gradient(135deg,rgba(22,163,74,.3),rgba(6,182,212,.2)); border:1px solid rgba(22,163,74,.4); border-radius:24px; padding:48px; text-align:center; max-width:640px; }
+    .cta-box .phone { font-size:36px; font-weight:800; color:#06b6d4; margin:16px 0; }
+    .badge-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:20px; }
+    .badge { background:rgba(255,255,255,.1); border-radius:20px; padding:6px 16px; font-size:13px; }
+    .slide-1 { background:radial-gradient(ellipse at 30% 50%,rgba(22,163,74,.2) 0%,transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(6,182,212,.15) 0%,transparent 60%),#0f172a; }
+    .slide-2 { background:radial-gradient(ellipse at 20% 80%,rgba(22,163,74,.15) 0%,transparent 50%),#0f172a; }
+    .slide-3,.slide-5,.slide-7 { background:#0f172a; }
+    .slide-4 { background:radial-gradient(ellipse at 80% 20%,rgba(6,182,212,.15) 0%,transparent 50%),#0f172a; }
+    .slide-6 { background:radial-gradient(ellipse at 50% 80%,rgba(22,163,74,.2) 0%,transparent 50%),#0f172a; }
+    .slide-8 { background:radial-gradient(ellipse at 50% 30%,rgba(6,182,212,.2) 0%,transparent 60%),#0f172a; }
+  </style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="slide-num" id="slideNum"></div>
+
+<div class="slides">
+
+  <!-- Slide 1: 封面 -->
+  <div class="slide slide-1 active">
+    <div class="tag">方案演示 · 2026</div>
+    <h1>晒和云创大健康创业园<br><span class="gradient">SEO + 社媒线索</span><br>自动化获客方案</h1>
+    <p class="sub">杭州西湖区 · 综合型创业园<br>从零搭建 · 全自动运营 · 实时线索推送</p>
+  </div>
+
+  <!-- Slide 2: 痛点 -->
+  <div class="slide slide-2">
+    <div class="tag">问题背景</div>
+    <h2>园区招租的三大痛点</h2>
+    <div class="cards col3" style="margin-top:32px;">
+      <div class="card">
+        <div class="card-icon">😤</div>
+        <h3>线索靠等</h3>
+        <p>被动等客户上门，没有主动获客渠道，空置率高</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3>搜索无排名</h3>
+        <p>百度/Google搜"西湖区办公室出租"，找不到自己的园区</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <h3>社媒线索散</h3>
+        <p>小红书/抖音有大量求租帖，但没有系统监控和跟进</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 方案全景 -->
+  <div class="slide slide-3">
+    <div class="tag">解决方案</div>
+    <h2>四层自动化获客体系</h2>
+    <div class="flow" style="margin-top:36px;">
+      <div class="flow-item"><div class="fi-icon">🌐</div><div class="fi-label">SEO落地页</div></div>
+      <div class="arrow">→</div>
+      <div class="flow-item"><div class="fi-icon">📡</div><div class="fi-label">社媒监控</div></div>
+      <div class="arrow">→</div>
+      <div class="flow-item"><div class="fi-icon">💬</div><div class="fi-label">话术回复</div></div>
+      <div class="arrow">→</div>
+      <div class="flow-item"><div class="fi-icon">🔔</div><div class="fi-label">飞书推送</div></div>
+      <div class="arrow">→</div>
+      <div class="flow-item"><div class="fi-icon">🤝</div><div class="fi-label">成交转化</div></div>
+    </div>
+    <p class="sub" style="margin-top:32px;">搜索流量 + 社媒主动出击，双渠道覆盖，线索实时到飞书群</p>
+  </div>
+
+  <!-- Slide 4: SEO -->
+  <div class="slide slide-4">
+    <div class="tag">第一层 · SEO</div>
+    <h2>西湖区独立SEO落地页</h2>
+    <div class="cards col2" style="margin-top:28px; max-width:800px;">
+      <div class="card">
+        <div class="card-icon">🏗️</div>
+        <h3>技术架构</h3>
+        <p>纯静态HTML，部署GitHub Pages，HTTPS全站加密，自动CI/CD部署，零服务器成本</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h3>SEO配置</h3>
+        <p>每页独立title/description/keywords/canonical，sitemap.xml提交百度，覆盖"西湖区办公室出租"等核心词</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <h3>页面结构</h3>
+        <p>首页 + 晒和云创园区详情页，共2个页面，响应式设计，手机端完美适配</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔗</div>
+        <h3>访问地址</h3>
+        <p style="color:#06b6d4;">wenpi.github.io/shaihe-office<br>部署后即可访问</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 社媒监控 -->
+  <div class="slide slide-5">
+    <div class="tag">第二层 · 社媒监控</div>
+    <h2>每日关键词监控 + 话术库</h2>
+    <div class="list" style="margin-top:28px;">
+      <div class="list-item">
+        <div class="list-num">1</div>
+        <div class="list-text">
+          <h4>15个核心关键词</h4>
+          <p>覆盖"西湖区办公室出租/工位租赁/创业园"等，监控小红书、抖音、微博、百度贴吧4个平台</p>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-num">2</div>
+        <div class="list-text">
+          <h4>每日自动生成搜索链接</h4>
+          <p>Python脚本一键运行，生成当日搜索链接清单，直接点击跳转对应平台帖子</p>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-num">3</div>
+        <div class="list-text">
+          <h4>4套回复话术</h4>
+          <p>通用版/大健康版/初创版/成长型版，一键复制，人工回复求租帖，精准触达潜在客户</p>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-num">4</div>
+        <div class="list-text">
+          <h4>线索工具页</h4>
+          <p>网页版一体化工具，搜索+话术+线索填报+飞书推送，全流程在一个页面完成</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 飞书推送 -->
+  <div class="slide slide-6">
+    <div class="tag">第三层 · 线索推送</div>
+    <h2>飞书实时通知 + 多维表格自动存档</h2>
+    <div class="cards col2" style="margin-top:28px; max-width:860px;">
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>飞书群实时推送</h3>
+        <p>填写线索后一键提交，飞书群秒级收到通知，联系人/电话/意向/面积一目了然</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>多维表格自动写入</h3>
+        <p>每条线索同步写入飞书多维表格，含联系人、电话、意向园区、需求面积、来源平台、跟进状态</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <h3>Cloudflare Worker 中转</h3>
+        <p>通过无服务器中转解决跨域问题，零成本、高可用，飞书 API 安全调用</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <h3>双写并行</h3>
+        <p>提交一次，同时触发飞书群通知 + 多维表格记录新增，线索永不丢失，随时可筛选导出</p>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:20px;">Webhook + Bitable 已配置 · 无需额外开发</p>
+  </div>
+
+  <!-- Slide 7: 多平台分发 -->
+  <div class="slide slide-7">
+    <div class="tag">第四层 · 内容分发</div>
+    <h2>多平台内容矩阵</h2>
+    <div class="cards col2" style="margin-top:28px; max-width:800px;">
+      <div class="card">
+        <div class="card-icon">📰</div>
+        <h3>百家号</h3>
+        <p>发布园区介绍文章，百度系内容权重高，有助于搜索排名，内容已准备好</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏠</div>
+        <h3>58同城</h3>
+        <p>房源信息已准备，覆盖共享工位/独立办公室/整层空间，精准触达找房用户</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <h3>小红书/抖音</h3>
+        <p>每日监控求租帖，主动出击回复，4套话术覆盖不同客户类型</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <h3>知乎/贴吧</h3>
+        <p>回答"杭州西湖区哪里有办公室出租"类问题，长尾流量持续导入</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: 成果 -->
+  <div class="slide slide-8">
+    <div class="tag">项目成果</div>
+    <h2>已完成交付</h2>
+    <div class="result-grid" style="margin-top:28px;">
+      <div class="result-item">
+        <div class="label">SEO网站</div>
+        <div class="value">2 个页面</div>
+        <div class="desc">首页 + 园区详情页</div>
+      </div>
+      <div class="result-item">
+        <div class="label">监控关键词</div>
+        <div class="value">15 个</div>
+        <div class="desc">覆盖4大社媒平台</div>
+      </div>
+      <div class="result-item">
+        <div class="label">回复话术</div>
+        <div class="value">4 套</div>
+        <div class="desc">通用/大健康/初创/成长型</div>
+      </div>
+      <div class="result-item">
+        <div class="label">飞书推送</div>
+        <div class="value">实时</div>
+        <div class="desc">线索秒级通知到群</div>
+      </div>
+      <div class="result-item">
+        <div class="label">多维表格</div>
+        <div class="value">自动存档</div>
+        <div class="desc">Cloudflare Worker 中转写入</div>
+      </div>
+      <div class="result-item">
+        <div class="label">内容发布</div>
+        <div class="value">百家号+58</div>
+        <div class="desc">多平台内容矩阵</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: 联系 -->
+  <div class="slide slide-1">
+    <div class="tag">立即咨询</div>
+    <div class="cta-box">
+      <h2>晒和云创大健康创业园</h2>
+      <div class="phone">📞 13858129096</div>
+      <p style="color:#94a3b8;">电话/微信同号 · 工作日当天安排看房</p>
+      <div class="badge-row">
+        <span class="badge">📍 杭州西湖区</span>
+        <span class="badge">✅ 可注册地址</span>
+        <span class="badge">🚀 拎包入驻</span>
+        <span class="badge">💼 多行业均可</span>
+      </div>
+      <p style="margin-top:20px; font-size:13px; color:#16a34a;">wenpi.github.io/shaihe-office</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button onclick="prev()">← 上一页</button>
+  <button onclick="next()">下一页 →</button>
+</div>
+
+<script>
+  let cur = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = (n + total) % total;
+    slides[cur].classList.add('active');
+    document.getElementById('progress').style.width = ((cur+1)/total*100) + '%';
+    document.getElementById('slideNum').textContent = (cur+1) + ' / ' + total;
+  }
+  function next() { show(cur+1); }
+  function prev() { show(cur-1); }
+  document.addEventListener('keydown', e => {
+    if (e.key==='ArrowRight'||e.key==='ArrowDown') next();
+    if (e.key==='ArrowLeft'||e.key==='ArrowUp') prev();
+  });
+  show(0);
+</script>
+</body>
+</html>
