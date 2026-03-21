@@ -112,6 +112,7 @@ section:nth-child(even) { background: #fff; }
     <a href="#materials">材料清单</a>
     <a href="#budget">预算估算</a>
     <a href="#timeline">实施计划</a>
+    <a href="#rendering">效果图生成</a>
   </div>
 </nav>
 
@@ -161,35 +162,63 @@ section:nth-child(even) { background: #fff; }
 <section id="floorplan">
   <div class="container">
     <h2 class="section-title">平面布局示意</h2>
-    <p class="section-desc">436.59㎡ 全开放空间概念布局 — 比例示意，非精确施工图</p>
+    <p class="section-desc">436.59㎡ 基于联华大厦10楼实际户型 — 长条形双面采光，左侧公共区右侧大开间</p>
     <div style="background:#fff;border-radius:12px;padding:24px;border:1px solid var(--border);overflow-x:auto;">
-      <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:800px;margin:0 auto;display:block;">
+      <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;margin:0 auto;display:block;">
         <!-- 外墙 -->
-        <rect x="40" y="40" width="720" height="420" fill="none" stroke="#2C2C2C" stroke-width="3" rx="4"/>
-        <!-- 窗户标记（上方整排） -->
-        <line x1="80" y1="40" x2="720" y2="40" stroke="#4A7C59" stroke-width="6" stroke-dasharray="20,8"/>
-        <text x="400" y="28" text-anchor="middle" font-size="11" fill="#4A7C59">▼ 整排窗户（最佳采光面）▼</text>
+        <rect x="40" y="60" width="820" height="280" fill="none" stroke="#2C2C2C" stroke-width="3" rx="2"/>
+        <!-- 北侧窗户（上方） -->
+        <line x1="200" y1="60" x2="850" y2="60" stroke="#4A7C59" stroke-width="5" stroke-dasharray="16,6"/>
+        <text x="525" y="50" text-anchor="middle" font-size="10" fill="#4A7C59">▼ 北侧窗户 ▼</text>
+        <!-- 南侧窗户（下方） -->
+        <line x1="200" y1="340" x2="850" y2="340" stroke="#4A7C59" stroke-width="5" stroke-dasharray="16,6"/>
+        <text x="525" y="365" text-anchor="middle" font-size="10" fill="#4A7C59">▲ 南侧窗户 ▲</text>
+
+        <!-- 公共区（电梯厅/楼梯/卫生间） -->
+        <rect x="44" y="64" width="150" height="272" fill="#E8E8E8" stroke="#999" stroke-width="1" rx="2"/>
+        <text x="119" y="175" text-anchor="middle" font-size="11" fill="#666">电梯厅</text>
+        <text x="119" y="195" text-anchor="middle" font-size="10" fill="#999">楼梯 · 卫生间</text>
+        <text x="119" y="215" text-anchor="middle" font-size="10" fill="#999">公共区域</text>
         <!-- 入口 -->
-        <rect x="40" y="340" width="4" height="60" fill="#C8956C" stroke="none"/>
-        <text x="20" y="375" text-anchor="middle" font-size="10" fill="#C8956C" transform="rotate(-90,20,375)">入口</text>
+        <rect x="194" y="170" width="4" height="60" fill="#C8956C"/>
+        <text x="205" y="205" font-size="10" fill="#C8956C">入口→</text>
 
-        <!-- 精油产品呈现区（左侧+下方，约150㎡） -->
-        <rect x="50" y="50" width="280" height="400" fill="#F5EDE3" stroke="#C8956C" stroke-width="1.5" stroke-dasharray="6,3" rx="6"/>
-        <text x="190" y="200" text-anchor="middle" font-size="14" fill="#3A3A3A" font-weight="600">🧴 精油产品呈现区</text>
-        <text x="190" y="225" text-anchor="middle" font-size="12" fill="#6B6B6B">约150㎡</text>
-        <text x="190" y="250" text-anchor="middle" font-size="10" fill="#999">产品陈列墙 · 体验岛台</text>
-        <text x="190" y="270" text-anchor="middle" font-size="10" fill="#999">精油体验角 · 柚木地板</text>
+        <!-- 结构柱 -->
+        <rect x="310" y="155" width="10" height="10" fill="#666" rx="1"/>
+        <rect x="450" y="155" width="10" height="10" fill="#666" rx="1"/>
+        <rect x="590" y="155" width="10" height="10" fill="#666" rx="1"/>
+        <rect x="730" y="155" width="10" height="10" fill="#666" rx="1"/>
+        <rect x="310" y="235" width="10" height="10" fill="#666" rx="1"/>
+        <rect x="450" y="235" width="10" height="10" fill="#666" rx="1"/>
+        <rect x="590" y="235" width="10" height="10" fill="#666" rx="1"/>
+        <rect x="730" y="235" width="10" height="10" fill="#666" rx="1"/>
 
-        <!-- 集中办公区（右侧，约286.59㎡） -->
-        <rect x="340" y="50" width="410" height="400" fill="#F0EBE3" stroke="#8B7355" stroke-width="1.5" stroke-dasharray="6,3" rx="6"/>
-        <text x="545" y="180" text-anchor="middle" font-size="14" fill="#3A3A3A" font-weight="600">🖥️ 集中办公区</text>
-        <text x="545" y="205" text-anchor="middle" font-size="12" fill="#6B6B6B">约286.59㎡</text>
-        <text x="545" y="230" text-anchor="middle" font-size="10" fill="#999">柚木工作台 · 散尾葵分隔</text>
-        <text x="545" y="250" text-anchor="middle" font-size="10" fill="#999">靠窗活动区 · 茶歇角</text>
+        <!-- 精油产品呈现区（入口右侧前段） -->
+        <rect x="205" y="68" width="260" height="264" fill="#F5EDE3" stroke="#C8956C" stroke-width="1.5" stroke-dasharray="6,3" rx="4"/>
+        <text x="335" y="170" text-anchor="middle" font-size="13" fill="#3A3A3A" font-weight="600">🧴 精油产品呈现区</text>
+        <text x="335" y="192" text-anchor="middle" font-size="11" fill="#6B6B6B">约150㎡</text>
+        <text x="335" y="212" text-anchor="middle" font-size="9" fill="#999">产品陈列墙 · 体验岛台 · 精油体验角</text>
+        <text x="335" y="228" text-anchor="middle" font-size="9" fill="#999">柚木地板 · 龟背竹围合</text>
 
-        <!-- 分区线 -->
-        <line x1="335" y1="50" x2="335" y2="450" stroke="#4A7C59" stroke-width="2" stroke-dasharray="8,4"/>
-        <text x="335" y="475" text-anchor="middle" font-size="9" fill="#4A7C59">🌿 绿植隐性分隔带 🌿</text>
+        <!-- 集中办公区（后段大空间） -->
+        <rect x="475" y="68" width="378" height="264" fill="#F0EBE3" stroke="#8B7355" stroke-width="1.5" stroke-dasharray="6,3" rx="4"/>
+        <text x="664" y="150" text-anchor="middle" font-size="13" fill="#3A3A3A" font-weight="600">🖥️ 集中办公区</text>
+        <text x="664" y="172" text-anchor="middle" font-size="11" fill="#6B6B6B">约286.59㎡</text>
+        <text x="664" y="192" text-anchor="middle" font-size="9" fill="#999">柚木工作台 · 散尾葵分隔</text>
+        <!-- 靠窗活动子区 -->
+        <rect x="700" y="72" width="148" height="80" fill="#E8F0E4" stroke="#4A7C59" stroke-width="1" stroke-dasharray="4,2" rx="3"/>
+        <text x="774" y="110" text-anchor="middle" font-size="9" fill="#4A7C59">靠窗活动区</text>
+        <text x="774" y="124" text-anchor="middle" font-size="8" fill="#999">可移动家具</text>
+        <!-- 茶歇子区 -->
+        <rect x="700" y="248" width="148" height="80" fill="#FFF8F0" stroke="#C8956C" stroke-width="1" stroke-dasharray="4,2" rx="3"/>
+        <text x="774" y="290" text-anchor="middle" font-size="9" fill="#C8956C">☕ 茶歇角</text>
+
+        <!-- 绿植分隔带 -->
+        <line x1="470" y1="68" x2="470" y2="332" stroke="#4A7C59" stroke-width="2" stroke-dasharray="6,4"/>
+        <text x="470" y="380" text-anchor="middle" font-size="9" fill="#4A7C59">🌿 绿植隐性分隔带 🌿</text>
+
+        <!-- 指北针 -->
+        <text x="870" y="30" font-size="12" fill="#666">↑ N</text>
       </svg>
     </div>
   </div>
@@ -556,7 +585,107 @@ section:nth-child(even) { background: #fff; }
   </div>
 </section>
 
-<!-- Footer -->
+<!-- Section 12: 效果图生成指南 -->
+<section id="rendering">
+  <div class="container">
+    <h2 class="section-title">效果图生成指南</h2>
+    <p class="section-desc">使用 AI 图像生成工具，按视角分别出图 — 基于联华大厦10楼实际户型</p>
+
+    <!-- 推荐方案 -->
+    <div class="card" style="margin-bottom:24px;border-left:4px solid var(--gold);">
+      <h3>推荐工具与方案</h3>
+      <p style="margin-bottom:12px;">首选 Midjourney v6.1（室内设计效果图质感最佳），备选 DALL-E 3（ChatGPT Plus 内置，操作简单）或 Stable Diffusion + ControlNet（可用平面图控制构图）。</p>
+      <p style="margin-bottom:12px;">建议出 <strong>8 张图</strong>，覆盖全部核心视角。在 Midjourney Discord 中输入 <code>/imagine</code> + 下方提示词。每张图生成后选 U1-U4 放大最满意的版本。</p>
+      <p>风格锁定技巧：第一张满意后，后续图加 <code>--sref [第一张图URL]</code> 参数，确保全套风格统一。</p>
+    </div>
+
+    <!-- 提示词列表 -->
+    <div style="display:grid;gap:16px;">
+
+      <!-- 图1 -->
+      <div class="card" style="border-left:4px solid #E74C3C;">
+        <div class="tag" style="background:#E74C3C;">图1</div>
+        <h3>入口全景 — 从电梯厅望向整个空间</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">视角：站在左侧电梯厅入口处，向右望去，长条形空间纵深展开</p>
+        <div style="background:#2C2C2C;color:#ddd;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;word-break:break-all;">
+Interior design photography, standing at entrance looking into a long rectangular 436sqm open-plan office on 10th floor of old building, industrial loft style. Left side: essential oil product display area with teak wood flooring, black iron frame product shelving on exposed brick wall, central experience island counter with cement top and teak edge. Right side extends deep: coworking area with cement self-leveling floor, long teak desks with black iron legs. Both north and south walls have large windows flooding space with natural light. Raw concrete ceiling with exposed black pipes, no suspended ceiling, 3.2m height. Abundant tropical plants including 2m tall areca palms as dividers, monstera, bird of paradise. Warm 2700K rattan pendant lights hanging throughout. Thai Sabai relaxed atmosphere --ar 16:9 --v 6.1 --style raw
+        </div>
+      </div>
+
+      <!-- 图2 -->
+      <div class="card" style="border-left:4px solid #F39C12;">
+        <div class="tag" style="background:#F39C12;">图2</div>
+        <h3>精油产品呈现区 — 产品陈列墙与体验岛台</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">视角：入口右转，面向砖墙产品陈列区，体验岛台在前景</p>
+        <div style="background:#2C2C2C;color:#ddd;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;word-break:break-all;">
+Interior design photo, essential oil product showroom in industrial loft office, 150sqm area. Exposed red brick wall with matte black iron frame shelving system displaying essential oil bottles organized by category. Central experience island counter with cement countertop and teak wood edge trim, visitors testing and smelling products. Teak wood wide-plank flooring. Large Thai Lanna style acrylic painting of tropical jungle 150x200cm on main wall. Chiang Mai celadon ceramic pot with green plant on floor. 2m tall bird of paradise plants as focal points. Warm 2700K rattan pendant lights, natural daylight from both sides. Raw concrete ceiling --ar 16:9 --v 6.1 --style raw
+        </div>
+      </div>
+
+      <!-- 图3 -->
+      <div class="card" style="border-left:4px solid #27AE60;">
+        <div class="tag" style="background:#27AE60;">图3</div>
+        <h3>精油体验角 — 绿色洞穴沉浸体验</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">视角：从产品区望向角落的半私密体验空间</p>
+        <div style="background:#2C2C2C;color:#ddd;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;word-break:break-all;">
+Interior design photo, cozy essential oil experience corner inside industrial loft, enclosed on three sides by 2m tall monstera deliciosa and bird-of-paradise plants forming a green cave sanctuary. Low rattan sofa with cotton linen cushions in natural and indigo colors, teak wood coffee table with essential oil diffuser. Bamboo woven floor mat on ground. Thai hill tribe handwoven tapestry 120x180cm at entrance. Thai traditional gold leaf lotus painting on wall inside. Rattan floor lamps 1.5m tall with 2400K warm glow creating light cocoon effect. Raw concrete ceiling above, exposed brick wall partially visible through foliage --ar 16:9 --v 6.1 --style raw
+        </div>
+      </div>
+
+      <!-- 图4 -->
+      <div class="card" style="border-left:4px solid #3498DB;">
+        <div class="tag" style="background:#3498DB;">图4</div>
+        <h3>集中办公区 — 柚木工作台纵深视角</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">视角：站在绿植分隔带处，向右望去，办公区纵深展开</p>
+        <div style="background:#2C2C2C;color:#ddd;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;word-break:break-all;">
+Interior design photo, open plan coworking space in long rectangular industrial loft, 286sqm. Multiple long teak wood desks with matte black iron tube legs arranged in rows, each seating 6-8 people. 1.5m tall areca palm plants between workstations as natural green dividers. Cement self-leveling grey floor. Both north and south windows visible, dual-side natural daylight. Raw concrete ceiling with exposed pipes painted matte black, industrial black iron ceiling fans. Rattan ball pendant lights 60cm at 2700K warm tone. Structural concrete columns visible. Relaxed Thai office atmosphere --ar 16:9 --v 6.1 --style raw
+        </div>
+      </div>
+
+      <!-- 图5 -->
+      <div class="card" style="border-left:4px solid #9B59B6;">
+        <div class="tag" style="background:#9B59B6;">图5</div>
+        <h3>靠窗活动区 — 双面采光的灵活空间</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">视角：办公区尽头，面向靠窗活动区，南北双面窗户自然光</p>
+        <div style="background:#2C2C2C;color:#ddd;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;word-break:break-all;">
+Interior photo, flexible event space at the far end of long rectangular industrial loft office, 10th floor. Large windows on both north and south walls flooding the area with bright natural daylight creating cross-ventilation breeze effect. Movable teak folding tables and stackable rattan chairs. Herb planters on windowsills with lemongrass basil and mint. Bamboo roller blinds half drawn. Raw concrete ceiling with industrial black iron ceiling fans. Green plant carts on wheels. Space configured for 50 person workshop. Thai relaxed Sabai vibe --ar 16:9 --v 6.1 --style raw
+        </div>
+      </div>
+
+      <!-- 图6 -->
+      <div class="card" style="border-left:4px solid #1ABC9C;">
+        <div class="tag" style="background:#1ABC9C;">图6</div>
+        <h3>茶歇角 — 泰式吧台与休憩空间</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">视角：办公区南侧角落，面向吧台和藤编座椅区</p>
+        <div style="background:#2C2C2C;color:#ddd;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;word-break:break-all;">
+Interior photo, Thai style tea bar corner in industrial loft office. Cement countertop bar with teak wood edge trim, hand brew coffee and Thai milk tea equipment on counter. Rattan round stools and low poufs scattered around. Exposed brick wall with large Thai contemporary watercolor paintings series of Bangkok street scenes. Handwoven bamboo pendant light above bar. LED strip light under counter edge 2700K warm glow. Trailing pothos and ivy hanging from ceiling pipes above. South-facing window with natural light. Monstera plants nearby. Warm intimate atmosphere --ar 16:9 --v 6.1 --style raw
+        </div>
+      </div>
+
+      <!-- 图7 -->
+      <div class="card" style="border-left:4px solid #E67E22;">
+        <div class="tag" style="background:#E67E22;">图7</div>
+        <h3>绿植分隔带 — 两区交界的绿色走廊</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">视角：站在空间中部，沿绿植分隔带纵向望去</p>
+        <div style="background:#2C2C2C;color:#ddd;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;word-break:break-all;">
+Interior photo, green corridor divider in the middle of long rectangular industrial loft office. A line of tall tropical plants - fiddle leaf fig 1.5m, rubber tree 1.2m, areca palm 2m - forming a natural green wall separating essential oil showroom from coworking area. Teak wood flooring transitions to cement self-leveling floor at the boundary with brass T-shaped edge strip. Thai Sukhothai style ceramic bowl set displayed on black iron shelf as wayfinding landmark. Staghorn ferns mounted on exposed brick wall. Air plants hanging from black iron frames. Concrete ceiling with rattan pendant lights on both sides. Dual-side window light --ar 16:9 --v 6.1 --style raw
+        </div>
+      </div>
+
+      <!-- 图8 -->
+      <div class="card" style="border-left:4px solid #2C3E50;">
+        <div class="tag" style="background:#2C3E50;">图8</div>
+        <h3>夜间氛围 — 2700K暖光下的整体空间</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">视角：入口处全景，夜间仅开启氛围照明模式</p>
+        <div style="background:#2C2C2C;color:#ddd;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;word-break:break-all;">
+Interior design photo at night, long rectangular 436sqm industrial loft office illuminated only by warm ambient lighting. Rattan pendant lights casting dappled golden shadows through woven gaps onto concrete ceiling and walls. Edison bulb wall sconces on exposed brick creating warm pools of light. Rattan floor lamps glowing in essential oil corner. LED strip under teak bar counter. Track spotlights highlighting Thai art on walls. Dark windows reflecting interior warmth. Silhouettes of tropical plants - areca palms, monstera, bird of paradise - creating dramatic shadows. Overall warm 2700K golden atmosphere, moody and intimate, Thai Sabai evening vibe --ar 16:9 --v 6.1 --style raw
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <footer style="background:var(--dark);color:#999;padding:40px 0;text-align:center;font-size:13px;">
   <div class="container">
     <p style="color:var(--gold);font-size:16px;margin-bottom:8px;">泰式工业风办公空间设计方案</p>
