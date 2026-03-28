@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ozon ERP Chrome 插件安装指南</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fa;color:#333;line-height:1.7}
+.header{background:linear-gradient(135deg,#1677ff,#0958d9);color:#fff;padding:48px 24px;text-align:center}
+.header h1{font-size:28px;margin-bottom:8px}
+.header p{opacity:.85;font-size:16px}
+.container{max-width:800px;margin:0 auto;padding:24px}
+.step{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+  background:#1677ff;color:#fff;border-radius:50%;font-weight:700;margin-right:12px;font-size:15px}
+.step h2{display:flex;align-items:center;font-size:18px;margin-bottom:16px}
+.step p{margin-bottom:12px;color:#555}
+.step img{max-width:100%;border-radius:8px;border:1px solid #e8e8e8;margin:8px 0}
+.code{background:#f0f2f5;padding:10px 16px;border-radius:6px;font-family:monospace;font-size:14px;
+  word-break:break-all;user-select:all;margin:8px 0;border:1px solid #d9d9d9}
+.tip{background:#e6f4ff;border-left:4px solid #1677ff;padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0}
+.tip strong{color:#1677ff}
+.warn{background:#fff7e6;border-left:4px solid #fa8c16;padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0}
+.warn strong{color:#fa8c16}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Ozon ERP Chrome 插件安装指南</h1>
+  <p>在 Ozon 商品页面一键计算利润、快速上架</p>
+</div>
+<div class="container">
+
+  <div class="step">
+    <h2><span class="step-num">1</span>下载插件文件</h2>
+    <p>点击下方链接下载插件压缩包，解压到本地任意目录：</p>
+    <div class="code">https://github.com/wenpi/shaihe-office/tree/main/ozon-erp-extension</div>
+    <p>或者直接克隆仓库：</p>
+    <div class="code">git clone https://github.com/wenpi/shaihe-office.git</div>
+    <p>插件文件位于 <code>ozon-erp-extension/</code> 目录下。</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="step-num">2</span>打开 Chrome 扩展管理页</h2>
+    <p>在 Chrome 浏览器地址栏输入：</p>
+    <div class="code">chrome://extensions</div>
+    <p>打开右上角的「开发者模式」开关。</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="step-num">3</span>加载已解压的扩展程序</h2>
+    <p>点击左上角「加载已解压的扩展程序」按钮。</p>
+    <p>选择刚才下载的 <code>ozon-erp-extension</code> 文件夹（包含 manifest.json 的那个目录）。</p>
+    <div class="tip">
+      <strong>提示：</strong>如果是从 GitHub 克隆的仓库，选择 <code>shaihe-office/ozon-erp-extension</code> 目录。
+    </div>
+  </div>
+
+  <div class="step">
+    <h2><span class="step-num">4</span>固定插件到工具栏</h2>
+    <p>安装成功后，点击 Chrome 右上角的拼图图标（扩展程序），找到「Ozon ERP」，点击📌固定。</p>
+    <p>这样插件图标会常驻在工具栏，方便随时使用。</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="step-num">5</span>登录 ERP 账号</h2>
+    <p>点击工具栏的 Ozon ERP 图标，在弹出窗口中输入你的 ERP 账号密码登录。</p>
+    <p>ERP 后台地址：</p>
+    <div class="code">https://erp.aiseo114.com</div>
+    <div class="tip">
+      <strong>提示：</strong>如果还没有账号，先在 ERP 后台注册，然后在插件中登录。
+    </div>
+  </div>
+
+  <div class="step">
+    <h2><span class="step-num">6</span>开始使用</h2>
+    <p>登录后，访问任意 Ozon 商品页面（seller.ozon.ru），插件会自动在页面右侧注入利润计算面板：</p>
+    <ul style="padding-left:20px;margin:8px 0">
+      <li>输入采购成本、运费等，实时计算利润率</li>
+      <li>支持体积重计算和计抛提醒</li>
+      <li>一键上架到 ERP 系统</li>
+    </ul>
+  </div>
+
+  <div class="warn">
+    <strong>注意：</strong>此插件为开发者模式加载，Chrome 每次启动可能提示「禁用开发者模式扩展程序」，
+    点击取消即可继续使用。
+  </div>
+
+</div>
+</body>
+</html>

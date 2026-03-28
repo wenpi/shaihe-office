@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Ozon ERP",
+  "version": "1.0.0",
+  "description": "Ozon 卖家 ERP 工具 - 一键上架、选品、订单管理",
+  "permissions": ["storage", "alarms", "tabs"],
+  "host_permissions": [
+    "https://*.ozon.ru/*",
+    "https://erp.aiseo114.com/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.ozon.ru/*"],
+      "js": ["content/index.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_title": "Ozon ERP"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
