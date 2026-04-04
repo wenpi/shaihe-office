@@ -84,9 +84,6 @@ function render(){
     const authorLink=n.authorId?'https://www.xiaohongshu.com/user/profile/'+n.authorId:'#';
     const authorHtml='<div class="card-author">@<a href="'+authorLink+'" target="_blank">'+esc(n.author)+'</a></div>';
 
-    // 封面图（带防盗链）
-    const coverHtml=n.cover?'<img src="'+esc(n.cover)+'" referrerpolicy="no-referrer" style="width:100%;max-height:400px;object-fit:cover;border-radius:8px;margin-bottom:12px" alt="封面">':'';
-
     // 评论（带作者链接）
     const cms=(n.commentList||[]).slice(0,5).map(c=>{
       const cLink=c.userId?'https://www.xiaohongshu.com/user/profile/'+c.userId:'#';
@@ -95,7 +92,7 @@ function render(){
 
     return '<div class="card"><div class="card-header"><span class="rank">#'+rank+'</span>'+
       '<div class="card-title">'+(n.url?'<a href="'+esc(n.url)+'" target="_blank">'+esc(n.title||'(无标题)')+'</a>':esc(n.title||'(无标题)'))+'</div>'+badge+
-      '</div>'+authorHtml+coverHtml+
+      '</div>'+authorHtml+
       '<div class="card-desc" id="d'+i+'">'+desc+'</div>'+
       '<button class="expand-btn" onclick="tog('+i+')">展开全文</button>'+
       '<div class="metrics"><div class="metric">❤ <span>'+n.likes+'</span></div><div class="metric">⭐ <span>'+n.collects+'</span></div><div class="metric">💬 <span>'+n.comments_count+'</span></div><div class="metric">🔗 <span>'+n.shares+'</span></div></div>'+
