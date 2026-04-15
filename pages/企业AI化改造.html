@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>企业AI化改造介绍</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;background:#0a0a0a;overflow:hidden}
+.deck{position:relative;width:100vw;height:100vh}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:none;justify-content:center;align-items:center}
+.slide.active{display:flex}
+.inner{width:1280px;max-width:96vw;height:720px;max-height:90vh;padding:56px 72px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0f1923 0%,#1a2a3a 100%);border-radius:12px;color:#e8edf3;
+  box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.inner::before{content:"";position:absolute;top:-200px;right:-200px;width:500px;height:500px;
+  background:radial-gradient(circle,rgba(59,130,246,.08) 0%,transparent 70%);border-radius:50%}
+h1{font-size:38px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:12px}
+h2{font-size:24px;font-weight:600;color:#60a5fa;margin-bottom:20px;line-height:1.4}
+.sub{font-size:18px;color:#94a3b8;line-height:1.6}
+.tag{display:inline-block;padding:5px 14px;border-radius:20px;font-size:13px;color:#60a5fa;border:1px solid rgba(96,165,250,.3);margin:4px}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:22px}
+.card h3{font-size:16px;font-weight:600;color:#fff;margin-bottom:8px}
+.card p,.card li{font-size:13px;color:#94a3b8;line-height:1.7}
+.card li{list-style:none;padding-left:14px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:#3b82f6}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.hl{color:#60a5fa;font-weight:600}
+.gold{font-size:17px;color:#fbbf24;font-style:italic;margin-top:18px;text-align:center}
+.flow{display:flex;align-items:center;gap:10px;justify-content:center;margin:18px 0}
+.flow .step{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:12px;padding:14px 16px;text-align:center;flex:1}
+.flow .step h4{color:#fff;font-size:15px;margin-bottom:6px}
+.flow .step p{color:#94a3b8;font-size:12px;line-height:1.5}
+.flow .arrow{color:#3b82f6;font-size:22px;flex-shrink:0}
+.qa .q{font-size:17px;font-weight:600;color:#fbbf24;margin-bottom:5px}
+.qa .a{font-size:14px;color:#cbd5e1;line-height:1.7}
+.bar{position:absolute;bottom:24px;left:72px;right:72px;display:flex;justify-content:space-between;font-size:12px;color:#475569}
+.cover{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center}
+.cover h1{font-size:48px;margin-bottom:10px}
+.cover h2{font-size:24px;color:#94a3b8;font-weight:400;margin-bottom:36px}
+.nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
+.nav button{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);
+  color:#94a3b8;font-size:16px;cursor:pointer;transition:.2s}
+.nav button:hover{background:rgba(59,130,246,.3);color:#fff}
+.pg{position:fixed;bottom:24px;right:30px;font-size:13px;color:#475569;z-index:10}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- P1 封面 -->
+<div class="slide active"><div class="inner"><div class="cover">
+  <h1>企业为什么一定要开始 AI 化改造</h1>
+  <h2>从"会用 AI"到"用 AI 赚钱、降本、提效"</h2>
+  <div><span class="tag">传统企业</span><span class="tag">连锁门店</span><span class="tag">本地生活</span><span class="tag">制造业</span><span class="tag">教育培训</span><span class="tag">家装医疗</span><span class="tag">企业服务</span></div>
+</div></div></div>
+
+<!-- P2 什么叫企业AI化 -->
+<div class="slide"><div class="inner">
+  <h1>什么叫企业AI化</h1>
+  <h2>不是买一个工具，而是升级工作方式</h2>
+  <div class="g2" style="margin-top:12px">
+    <div style="display:flex;flex-direction:column;justify-content:center">
+      <p class="sub" style="font-size:20px;line-height:2;color:#cbd5e1">
+        企业AI化，不是装一个机器人，<br>也不是让员工偶尔用一下 ChatGPT。<br><br>
+        真正的AI化，是让 AI 进入企业<br><span class="hl" style="font-size:24px">关键业务流程</span>，<br>成为稳定产能的一部分。
+      </p>
+    </div>
+    <div class="g2" style="gap:10px">
+      <div class="card" style="text-align:center;padding:18px"><h3>营销获客</h3><p>内容、素材、投放</p></div>
+      <div class="card" style="text-align:center;padding:18px"><h3>销售转化</h3><p>画像、话术、跟进</p></div>
+      <div class="card" style="text-align:center;padding:18px"><h3>客户服务</h3><p>咨询、接待、筛选</p></div>
+      <div class="card" style="text-align:center;padding:18px"><h3>内部管理</h3><p>纪要、报表、知识</p></div>
+      <div class="card" style="text-align:center;padding:18px"><h3>知识沉淀</h3><p>经验库、SOP、培训</p></div>
+      <div class="card" style="text-align:center;padding:18px"><h3>数据决策</h3><p>看板、分析、预警</p></div>
+    </div>
+  </div>
+</div></div>
+<!-- P3 为什么现在必须做 -->
+<div class="slide"><div class="inner">
+  <h1>为什么现在必须做</h1>
+  <h2>AI 带来的不是锦上添花，而是经营分水岭</h2>
+  <div class="g2" style="margin-top:16px;gap:36px">
+    <div>
+      <h3 style="color:#f87171;font-size:16px;margin-bottom:14px">企业今天面对的现实</h3>
+      <div class="card" style="margin-bottom:10px;border-color:rgba(248,113,113,.3)"><h3 style="color:#f87171">流量越来越贵</h3><p>获客成本逐年上涨，ROI 持续下降</p></div>
+      <div class="card" style="margin-bottom:10px;border-color:rgba(248,113,113,.3)"><h3 style="color:#f87171">人工越来越贵</h3><p>招人难、留人难、培训成本高</p></div>
+      <div class="card" style="margin-bottom:10px;border-color:rgba(248,113,113,.3)"><h3 style="color:#f87171">客户越来越难成交</h3><p>决策周期长、比价严重、信任门槛高</p></div>
+      <div class="card" style="border-color:rgba(248,113,113,.3)"><h3 style="color:#f87171">组织复制越来越难</h3><p>经验在个人头脑里，离职即流失</p></div>
+    </div>
+    <div>
+      <h3 style="color:#34d399;font-size:16px;margin-bottom:14px">AI 对应解决的价值</h3>
+      <div class="card" style="margin-bottom:10px;border-color:rgba(52,211,153,.3)"><h3 style="color:#34d399">降低获客成本</h3><p>AI 批量生产内容和素材</p></div>
+      <div class="card" style="margin-bottom:10px;border-color:rgba(52,211,153,.3)"><h3 style="color:#34d399">提高员工效率</h3><p>一人完成过去两到三人的工作量</p></div>
+      <div class="card" style="margin-bottom:10px;border-color:rgba(52,211,153,.3)"><h3 style="color:#34d399">提升客户转化</h3><p>更快响应、更精准话术、更好体验</p></div>
+      <div class="card" style="border-color:rgba(52,211,153,.3)"><h3 style="color:#34d399">放大组织能力</h3><p>把个人经验变成可复制的流程和系统</p></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- P4 五大优先场景 -->
+<div class="slide"><div class="inner">
+  <h1>先从哪里做最容易见效</h1>
+  <h2>优先落地的五大场景</h2>
+  <div class="g5" style="margin-top:20px">
+    <div class="card" style="text-align:center;padding:18px 12px">
+      <div style="font-size:32px;margin-bottom:8px">&#x1F4DD;</div>
+      <h3 style="font-size:14px">营销内容生产</h3>
+      <ul style="margin-top:8px"><li>文案脚本</li><li>投流素材</li><li>账号内容</li></ul>
+    </div>
+    <div class="card" style="text-align:center;padding:18px 12px">
+      <div style="font-size:32px;margin-bottom:8px">&#x1F916;</div>
+      <h3 style="font-size:14px">智能客服</h3>
+      <ul style="margin-top:8px"><li>售前咨询</li><li>常见问题</li><li>线索筛选</li></ul>
+    </div>
+    <div class="card" style="text-align:center;padding:18px 12px">
+      <div style="font-size:32px;margin-bottom:8px">&#x1F4B0;</div>
+      <h3 style="font-size:14px">销售辅助</h3>
+      <ul style="margin-top:8px"><li>客户画像</li><li>话术建议</li><li>跟进提醒</li></ul>
+    </div>
+    <div class="card" style="text-align:center;padding:18px 12px">
+      <div style="font-size:32px;margin-bottom:8px">&#x26A1;</div>
+      <h3 style="font-size:14px">办公提效</h3>
+      <ul style="margin-top:8px"><li>会议纪要</li><li>报表总结</li><li>知识问答</li></ul>
+    </div>
+    <div class="card" style="text-align:center;padding:18px 12px">
+      <div style="font-size:32px;margin-bottom:8px">&#x1F4CA;</div>
+      <h3 style="font-size:14px">数据决策</h3>
+      <ul style="margin-top:8px"><li>经营日报</li><li>投放分析</li><li>老板看板</li></ul>
+    </div>
+  </div>
+  <div class="gold" style="margin-top:28px">先做高频、重复、标准化的环节，最容易见效</div>
+</div></div>
+
+<!-- P5 三个价值 -->
+<div class="slide"><div class="inner">
+  <h1>AI 最直接的三个价值</h1>
+  <h2>核心不是技术升级，而是经营结果升级</h2>
+  <div class="g3" style="margin-top:24px">
+    <div class="card" style="border-top:3px solid #3b82f6;padding:26px">
+      <div style="font-size:44px;font-weight:800;color:#3b82f6;margin-bottom:6px">降本</div>
+      <ul><li>减少重复性人工工作</li><li>降低内容生产成本</li><li>降低基础客服接待成本</li><li>减少培训和试错成本</li></ul>
+    </div>
+    <div class="card" style="border-top:3px solid #8b5cf6;padding:26px">
+      <div style="font-size:44px;font-weight:800;color:#8b5cf6;margin-bottom:6px">提效</div>
+      <ul><li>一人完成两到三人工作量</li><li>缩短内容和方案产出时间</li><li>提升跨部门协作速度</li><li>加快响应和决策周期</li></ul>
+    </div>
+    <div class="card" style="border-top:3px solid #34d399;padding:26px">
+      <div style="font-size:44px;font-weight:800;color:#34d399;margin-bottom:6px">增收</div>
+      <ul><li>提高线索响应速度</li><li>提升客户转化率</li><li>提高客户满意度</li><li>增加复购和留存</li></ul>
+    </div>
+  </div>
+  <div class="gold" style="margin-top:24px">AI 不是替代人，而是让优秀员工产能翻倍，让普通员工输出更稳定</div>
+</div></div>
+
+<!-- P6 失败原因 -->
+<div class="slide"><div class="inner">
+  <h1>为什么很多企业做 AI 失败</h1>
+  <h2>不是 AI 没用，而是推进方法错了</h2>
+  <div class="g2" style="margin-top:20px;gap:18px">
+    <div class="card" style="position:relative;padding:26px 22px 22px 66px">
+      <div style="position:absolute;left:18px;top:22px;font-size:34px;font-weight:800;color:rgba(248,113,113,.35)">01</div>
+      <h3 style="color:#f87171">把 AI 当成一次性采购</h3>
+      <p>买了工具就以为企业已经 AI 化了，没有后续运营和迭代</p>
+    </div>
+    <div class="card" style="position:relative;padding:26px 22px 22px 66px">
+      <div style="position:absolute;left:18px;top:22px;font-size:34px;font-weight:800;color:rgba(248,113,113,.35)">02</div>
+      <h3 style="color:#f87171">只让个别人尝试</h3>
+      <p>没有进入流程，没有进入岗位标准动作，无法形成组织能力</p>
+    </div>
+    <div class="card" style="position:relative;padding:26px 22px 22px 66px">
+      <div style="position:absolute;left:18px;top:22px;font-size:34px;font-weight:800;color:rgba(248,113,113,.35)">03</div>
+      <h3 style="color:#f87171">只追求炫酷，不追求结果</h3>
+      <p>做了很多演示和 Demo，但业务指标没有任何变化</p>
+    </div>
+    <div class="card" style="position:relative;padding:26px 22px 22px 66px">
+      <div style="position:absolute;left:18px;top:22px;font-size:34px;font-weight:800;color:rgba(248,113,113,.35)">04</div>
+      <h3 style="color:#f87171">没有数据、知识和流程配套</h3>
+      <p>AI 再强也必须结合企业自己的资料和业务逻辑才能产出</p>
+    </div>
+  </div>
+  <div class="gold" style="margin-top:24px">AI 最大的失败，不是不会用，而是没有把它变成企业能力</div>
+</div></div>
+
+<!-- P7 正确路径 -->
+<div class="slide"><div class="inner">
+  <h1>正确的 AI 化路径</h1>
+  <h2>四步走：先小后大，先易后难</h2>
+  <div class="flow" style="margin-top:32px">
+    <div class="step">
+      <div style="font-size:30px;font-weight:800;color:#3b82f6;margin-bottom:4px">01</div>
+      <h4>找场景</h4><p>哪些工作最重复<br>哪些岗位最耗时<br>哪些环节最影响收入</p>
+    </div>
+    <div class="arrow">&#x27A1;</div>
+    <div class="step">
+      <div style="font-size:30px;font-weight:800;color:#8b5cf6;margin-bottom:4px">02</div>
+      <h4>做试点</h4><p>选 1 个部门<br>选 1 个高频场景<br>跑出可量化结果</p>
+    </div>
+    <div class="arrow">&#x27A1;</div>
+    <div class="step">
+      <div style="font-size:30px;font-weight:800;color:#f59e0b;margin-bottom:4px">03</div>
+      <h4>做流程</h4><p>从"某个人会用"<br>变成"岗位标准动作"<br>形成可复制 SOP</p>
+    </div>
+    <div class="arrow">&#x27A1;</div>
+    <div class="step">
+      <div style="font-size:30px;font-weight:800;color:#34d399;margin-bottom:4px">04</div>
+      <h4>做系统</h4><p>接知识库、CRM<br>接客服和投放数据<br>形成经营闭环</p>
+    </div>
+  </div>
+  <div class="gold" style="margin-top:32px">先跑通一个点，再复制成一条线，最后形成一个面</div>
+</div></div>
+
+<!-- P8 老板三问 -->
+<div class="slide"><div class="inner">
+  <h1>老板最关心的三个问题</h1>
+  <h2>正面回应顾虑，消除决策障碍</h2>
+  <div style="margin-top:24px">
+    <div class="card" style="padding:22px 26px;margin-bottom:14px;border-left:4px solid #3b82f6">
+      <div class="qa"><div class="q">Q1：能不能真正落地？</div>
+      <div class="a">能，但必须从具体业务场景切入，不能停留在概念和工具层面。先选一个最痛的点做试点，用结果说话。</div></div>
+    </div>
+    <div class="card" style="padding:22px 26px;margin-bottom:14px;border-left:4px solid #8b5cf6">
+      <div class="qa"><div class="q">Q2：会不会很贵？</div>
+      <div class="a">早期试点成本通常低于盲目招人和低效试错。真正贵的不是做 AI，而是长期低效率运营带来的隐性成本。</div></div>
+    </div>
+    <div class="card" style="padding:22px 26px;border-left:4px solid #34d399">
+      <div class="qa"><div class="q">Q3：会不会替代员工？</div>
+      <div class="a">短期不是替代人，而是重构分工。未来淘汰的不是员工，而是不会借助 AI 工作的低效率工作方式。</div></div>
+    </div>
+  </div>
+  <div class="gold" style="margin-top:20px">不会让团队用 AI 的企业，一定会越来越被动</div>
+</div></div>
+
+<!-- P9 行业落点 -->
+<div class="slide"><div class="inner">
+  <h1>不同行业的第一落点</h1>
+  <h2>每个行业都能做 AI，但第一步不一样</h2>
+  <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="card" style="padding:16px 20px">
+      <h3 style="display:inline-block;background:rgba(59,130,246,.2);padding:2px 10px;border-radius:6px;font-size:14px;color:#60a5fa">制造业</h3>
+      <p style="margin-top:6px">销售资料自动生成 / 产品问答知识库 / 询盘分流与报价辅助</p>
+    </div>
+    <div class="card" style="padding:16px 20px">
+      <h3 style="display:inline-block;background:rgba(139,92,246,.2);padding:2px 10px;border-radius:6px;font-size:14px;color:#a78bfa">教育培训</h3>
+      <p style="margin-top:6px">招生客服 AI 化 / 课程顾问话术优化 / 内容批量生产</p>
+    </div>
+    <div class="card" style="padding:16px 20px">
+      <h3 style="display:inline-block;background:rgba(52,211,153,.2);padding:2px 10px;border-radius:6px;font-size:14px;color:#34d399">连锁 / 本地生活</h3>
+      <p style="margin-top:6px">门店活动内容生成 / 私域咨询回复 / 用户评价分析和复购提醒</p>
+    </div>
+    <div class="card" style="padding:16px 20px">
+      <h3 style="display:inline-block;background:rgba(251,191,36,.2);padding:2px 10px;border-radius:6px;font-size:14px;color:#fbbf24">家装 / 医疗 / 企服</h3>
+      <p style="margin-top:6px">线索筛选 / 咨询接待 / 顾问辅助成交 / 案例内容批量化</p>
+    </div>
+    <div class="card" style="padding:16px 20px;grid-column:1/3">
+      <h3 style="display:inline-block;background:rgba(248,113,113,.2);padding:2px 10px;border-radius:6px;font-size:14px;color:#f87171">市场投放企业</h3>
+      <p style="margin-top:6px">素材脚本生成 / 多版本创意测试 / 线索意向识别 / 投放复盘自动化</p>
+    </div>
+  </div>
+  <div class="gold" style="margin-top:16px">第一落点，一定要从最痛、最贵、最慢的地方切入</div>
+</div></div>
+
+<!-- P10 结论 -->
+<div class="slide"><div class="inner"><div class="cover">
+  <h1 style="font-size:42px;margin-bottom:28px">企业 AI 化<br>最怕的不是做错，而是还没开始</h1>
+  <div style="display:flex;gap:20px;margin-bottom:32px">
+    <div class="card" style="flex:1;text-align:center;padding:22px">
+      <div style="font-size:30px;font-weight:800;color:#3b82f6;margin-bottom:6px">01</div>
+      <p style="color:#e8edf3;font-size:15px">先找一个<br><span class="hl">最值钱的场景</span></p>
+    </div>
+    <div class="card" style="flex:1;text-align:center;padding:22px">
+      <div style="font-size:30px;font-weight:800;color:#8b5cf6;margin-bottom:6px">02</div>
+      <p style="color:#e8edf3;font-size:15px">形成流程和<br><span style="color:#a78bfa;font-weight:600">标准动作</span></p>
+    </div>
+    <div class="card" style="flex:1;text-align:center;padding:22px">
+      <div style="font-size:30px;font-weight:800;color:#34d399;margin-bottom:6px">03</div>
+      <p style="color:#e8edf3;font-size:15px">把 AI 当成<br><span style="color:#34d399;font-weight:600">经营能力</span></p>
+    </div>
+  </div>
+  <div style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:12px;padding:18px 36px;max-width:680px">
+    <p style="color:#fbbf24;font-size:19px;font-weight:600;text-align:center">
+      下一轮企业竞争，不是谁知道 AI，<br>而是谁先把 AI 变成收入、效率和利润。
+    </p>
+  </div>
+</div></div></div>
+
+</div><!-- end deck -->
+
+<div class="nav">
+  <button onclick="go(-1)">&#x25C0;</button>
+  <button onclick="go(1)">&#x25B6;</button>
+</div>
+<div class="pg" id="pg"></div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+let cur=0;
+function show(i){slides.forEach(s=>s.classList.remove('active'));slides[i].classList.add('active');document.getElementById('pg').textContent=(i+1)+' / '+slides.length;}
+function go(d){cur=Math.max(0,Math.min(slides.length-1,cur+d));show(cur);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1);});
+show(0);
+</script>
+</body></html>
