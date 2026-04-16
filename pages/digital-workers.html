@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数字员工岗位设计 — 全栈增长 · SEO专员 · 素材投手</title>
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; color: #e0e0e0; background: #0a0a1a; line-height: 1.7; }
+a { color: #64ffda; text-decoration: none; }
+
+/* Hero */
+.hero { background: linear-gradient(135deg, #0a0a2e 0%, #1a1a3e 50%, #0d2847 100%); padding: 80px 24px 60px; text-align: center; }
+.hero h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 800; color: #fff; margin-bottom: 12px; }
+.hero p { font-size: 17px; color: #94a3b8; max-width: 600px; margin: 0 auto 24px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.hero-badge { background: rgba(100,255,218,.1); border: 1px solid rgba(100,255,218,.3); border-radius: 20px; padding: 6px 16px; font-size: 13px; color: #64ffda; }
+
+/* Section */
+.section { padding: 60px 24px; max-width: 1100px; margin: 0 auto; }
+.section-title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.section-sub { color: #64ffda; font-size: 14px; margin-bottom: 32px; }
+.section-divider { border: none; border-top: 1px solid #1e293b; margin: 0 24px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>数字员工岗位设计</h1>
+  <p>基于飞书机器人 + TrafficEngine 基础设施，三个自主运转的数字员工</p>
+  <div class="hero-badges">
+    <span class="hero-badge">半自动 + 审批节点</span>
+    <span class="hero-badge">飞书机器人中心</span>
+    <span class="hero-badge">组长调度模式</span>
+    <span class="hero-badge">首期：杭州办公室出租</span>
+  </div>
+</div>
+
+<!-- 架构总览 -->
+<div class="section">
+  <div class="section-title">系统架构</div>
+  <div class="section-sub">方案 A：飞书 Bot 原生调度</div>
+  <pre style="background:#111827;padding:20px;border-radius:12px;font-size:13px;line-height:1.8;overflow-x:auto;color:#e0e0e0;">
+┌─────────────────────────────────────────────────────────┐
+│                    飞书机器人 (server.py)                  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────────────────┐   │
+│  │ 消息路由  │  │ 审批引擎  │  │ 定时调度 APScheduler │   │
+│  └────┬─────┘  └────┬─────┘  └──────┬───────────────┘   │
+│       └─────────────┴───────────────┘                    │
+│                    员工调度层 dispatcher.py                │
+│        ┌────────────┼────────────┐                       │
+│   ┌────┴────┐  ┌────┴────┐  ┌───┴─────┐                 │
+│   │全栈增长  │  │ SEO专员 │  │素材投手  │                 │
+│   │ (组长)  │  │         │  │         │                 │
+│   └────┬────┘  └────┬────┘  └───┬─────┘                 │
+└────────┴────────────┴───────────┴────────────────────────┘
+         │            │           │
+    TrafficEngine · 爬虫服务 · Claude API · Supabase · CDP
+  </pre>
+</div>
+
+<hr class="section-divider">
+
+<!-- 岗位1: 全栈增长员工 -->
+<div class="section" id="growth-lead">
+  <div class="section-title">岗位一：全栈增长员工（组长）</div>
+  <div class="section-sub">每日一次 · 数据驱动决策 · 任务分派</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div style="background:#111827;padding:20px;border-radius:12px;">
+      <h3 style="color:#64ffda;font-size:15px;margin-bottom:10px;">08:00 晨会：数据回收</h3>
+      <ul style="font-size:13px;padding-left:16px;color:#94a3b8;">
+        <li>GSC: 关键词排名变化、点击量、展现量</li>
+        <li>GA4: 页面流量、跳出率、转化</li>
+        <li>小红书: 笔记阅读/点赞/收藏/评论</li>
+        <li>线索: 新增询盘数、来源渠道</li>
+        <li>Claude 分析数据 → 生成今日计划</li>
+      </ul>
+    </div>
+    <div style="background:#111827;padding:20px;border-radius:12px;">
+      <h3 style="color:#ffd93d;font-size:15px;margin-bottom:10px;">📋 审批：今日计划</h3>
+      <div style="background:#1e293b;padding:12px;border-radius:8px;font-size:13px;color:#ccc;margin-bottom:10px;">
+        "今日计划：<br>
+        - SEO专员：写1篇'杭州丁兰办公室出租'文章<br>
+        - 素材投手：生成10条小红书笔记，发布5条<br>
+        - 原因：'丁兰'关键词排名从12降到18"
+      </div>
+      <div style="display:flex;gap:8px;">
+        <span style="background:#064e3b;color:#6ee7b7;padding:4px 12px;border-radius:4px;font-size:12px;">✅ 批准执行</span>
+        <span style="background:#1e3a5f;color:#93c5fd;padding:4px 12px;border-radius:4px;font-size:12px;">✏️ 修改计划</span>
+        <span style="background:#3f3f46;color:#a1a1aa;padding:4px 12px;border-radius:4px;font-size:12px;">⏸ 跳过</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="color:#fff;font-size:16px;margin-bottom:12px;">决策逻辑</h3>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+    <div style="background:#111827;padding:14px;border-radius:8px;border-left:3px solid #ff6b6b;">
+      <div style="color:#ff6b6b;font-size:13px;font-weight:700;margin-bottom:4px;">排名下降</div>
+      <div style="color:#94a3b8;font-size:12px;">→ 派SEO专员写针对性文章</div>
+    </div>
+    <div style="background:#111827;padding:14px;border-radius:8px;border-left:3px solid #ffd93d;">
+      <div style="color:#ffd93d;font-size:13px;font-weight:700;margin-bottom:4px;">线索不足</div>
+      <div style="color:#94a3b8;font-size:12px;">→ 派素材投手加大投放</div>
+    </div>
+    <div style="background:#111827;padding:14px;border-radius:8px;border-left:3px solid #64ffda;">
+      <div style="color:#64ffda;font-size:13px;font-weight:700;margin-bottom:4px;">内容表现好</div>
+      <div style="color:#94a3b8;font-size:12px;">→ 复制放大，多生成类似</div>
+    </div>
+    <div style="background:#111827;padding:14px;border-radius:8px;border-left:3px solid #a78bfa;">
+      <div style="color:#a78bfa;font-size:13px;font-weight:700;margin-bottom:4px;">新热点出现</div>
+      <div style="color:#94a3b8;font-size:12px;">→ 两员工协同蹭热点</div>
+    </div>
+  </div>
+
+  <div style="background:#111827;padding:20px;border-radius:12px;">
+    <h3 style="color:#64ffda;font-size:15px;margin-bottom:10px;">20:00 日报汇总</h3>
+    <div style="background:#1e293b;padding:12px;border-radius:8px;font-size:13px;color:#ccc;">
+      "今日完成：<br>
+      ✅ SEO: 发布1篇文章(2800字)<br>
+      ✅ 素材: 生成10条，发布5条(3条成功2条待审核)<br>
+      📊 累计: 本周流量↑12%, 线索3条"
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- 岗位2: SEO专员 -->
+<div class="section" id="seo-specialist">
+  <div class="section-title">岗位二：SEO 专员</div>
+  <div class="section-sub">按任务驱动 · 调研→写作→优化→发布</div>
+
+  <!-- 任务1: 写新文章 -->
+  <div style="background:#111827;padding:20px;border-radius:12px;margin-bottom:16px;">
+    <h3 style="color:#64ffda;font-size:15px;margin-bottom:12px;">任务类型 1：写新文章</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">1. 关键词调研（自动）</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">2. AI写作 2000-3000字（自动）</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">3. Agent链优化（自动）</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#92400e;color:#fcd34d;padding:6px 14px;border-radius:20px;font-size:12px;">4. 📋 审批</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">5. 发布WordPress</span>
+    </div>
+    <div style="background:#1e293b;padding:12px;border-radius:8px;font-size:13px;color:#ccc;">
+      审批卡片："文章已生成：《杭州丁兰数创智慧谷办公室出租指南》<br>
+      2800字 | SEO评分 82 | 目标词密度 1.8%"<br>
+      <span style="display:flex;gap:6px;margin-top:8px;">
+        <span style="background:#064e3b;color:#6ee7b7;padding:3px 10px;border-radius:4px;font-size:11px;">✅ 发布</span>
+        <span style="background:#1e3a5f;color:#93c5fd;padding:3px 10px;border-radius:4px;font-size:11px;">✏️ 修改</span>
+        <span style="background:#7f1d1d;color:#fca5a5;padding:3px 10px;border-radius:4px;font-size:11px;">❌ 废弃</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- 任务2: 优化现有页面 -->
+  <div style="background:#111827;padding:20px;border-radius:12px;margin-bottom:16px;">
+    <h3 style="color:#ffd93d;font-size:15px;margin-bottom:12px;">任务类型 2：优化现有页面</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">1. 内容审计（自动）</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">2. 生成优化版本（自动）</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#92400e;color:#fcd34d;padding:6px 14px;border-radius:20px;font-size:12px;">3. 📋 审批对比</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">4. 应用更新</span>
+    </div>
+    <div style="background:#1e293b;padding:12px;border-radius:8px;font-size:13px;color:#ccc;">
+      "优化建议：标题 旧→新 | 新增2段(+500字) | SEO评分 68→85"
+    </div>
+  </div>
+
+  <!-- 任务3: 关键词拓展 -->
+  <div style="background:#111827;padding:20px;border-radius:12px;margin-bottom:16px;">
+    <h3 style="color:#a78bfa;font-size:15px;margin-bottom:12px;">任务类型 3：关键词拓展</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">1. 缺口分析 + 集群发现（自动）</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#92400e;color:#fcd34d;padding:6px 14px;border-radius:20px;font-size:12px;">2. 📋 审批关键词列表</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">3. 写入关键词库</span>
+    </div>
+  </div>
+
+  <!-- 复用能力 -->
+  <div style="background:#0f172a;border:1px solid #1e293b;padding:16px;border-radius:12px;">
+    <div style="font-size:13px;color:#94a3b8;">
+      <span style="color:#64ffda;font-weight:700;">复用现有：</span>/research, /write, /rewrite, /optimize, /analyze-existing, /cluster, /research-gaps, /publish-draft + 11个Agent链<br>
+      <span style="color:#ffd93d;font-weight:700;">需要新增：</span>SEO命令的 Python 封装（将 .md prompt 包装为 Claude API 可调用函数）
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- 岗位3: 素材投手 -->
+<div class="section" id="ad-operator">
+  <div class="section-title">岗位三：素材投手</div>
+  <div class="section-sub">双线并行 · 免费矩阵分发 + 付费聚光投流</div>
+
+  <!-- 线路A -->
+  <div style="background:#111827;padding:20px;border-radius:12px;margin-bottom:16px;">
+    <h3 style="color:#64ffda;font-size:15px;margin-bottom:12px;">线路 A：免费矩阵分发（小红书多账号）</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">1. AI二创生成素材（自动）</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#92400e;color:#fcd34d;padding:6px 14px;border-radius:20px;font-size:12px;">2. 📋 审批素材</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">3. CDP矩阵发布（自动）</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">4. 实时进度通知</span>
+    </div>
+    <div style="background:#1e293b;padding:12px;border-radius:8px;font-size:13px;color:#ccc;margin-bottom:10px;">
+      审批卡片："已生成 10 条小红书笔记：<br>
+      1.《丁兰数创智慧谷，创业者的理想办公地》<br>
+      2.《杭州临平办公室出租，50-200㎡灵活选择》..."
+    </div>
+    <div style="display:flex;gap:8px;">
+      <span style="background:#064e3b;color:#6ee7b7;padding:3px 10px;border-radius:4px;font-size:11px;">✅ 全部发布</span>
+      <span style="background:#1e3a5f;color:#93c5fd;padding:3px 10px;border-radius:4px;font-size:11px;">✏️ 逐条审核</span>
+      <span style="background:#7f1d1d;color:#fca5a5;padding:3px 10px;border-radius:4px;font-size:11px;">❌ 重新生成</span>
+    </div>
+  </div>
+
+  <div style="background:#111827;padding:16px;border-radius:12px;margin-bottom:16px;">
+    <h4 style="color:#94a3b8;font-size:13px;margin-bottom:8px;">矩阵发布参数</h4>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      <div style="background:#1e293b;padding:10px;border-radius:6px;text-align:center;">
+        <div style="color:#64ffda;font-size:20px;font-weight:800;">50</div>
+        <div style="color:#64748b;font-size:11px;">Chrome Profile</div>
+      </div>
+      <div style="background:#1e293b;padding:10px;border-radius:6px;text-align:center;">
+        <div style="color:#64ffda;font-size:20px;font-weight:800;">≥2h</div>
+        <div style="color:#64748b;font-size:11px;">同账号间隔</div>
+      </div>
+      <div style="background:#1e293b;padding:10px;border-radius:6px;text-align:center;">
+        <div style="color:#64ffda;font-size:20px;font-weight:800;">≤5条/天</div>
+        <div style="color:#64748b;font-size:11px;">每账号上限</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 线路B -->
+  <div style="background:#111827;padding:20px;border-radius:12px;margin-bottom:16px;">
+    <h3 style="color:#ffd93d;font-size:15px;margin-bottom:12px;">线路 B：付费聚光投流</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">1. 转化导向素材生成</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#92400e;color:#fcd34d;padding:6px 14px;border-radius:20px;font-size:12px;">2. 📋 审批投流计划</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">3. CDP操作聚光平台</span>
+      <span style="color:#334155;">→</span>
+      <span style="background:#064e3b;color:#6ee7b7;padding:6px 14px;border-radius:20px;font-size:12px;">4. 每4h数据监控</span>
+    </div>
+    <div style="background:#1e293b;padding:12px;border-radius:8px;font-size:13px;color:#ccc;">
+      审批卡片："投流计划：3组竖版图文 | ¥100/天<br>
+      定向：杭州+临平+拱墅, 25-45岁, 创业/企业主 | 出价 ¥2.5/点击"
+    </div>
+    <div style="background:#1e293b;padding:12px;border-radius:8px;font-size:13px;color:#fcd34d;margin-top:8px;">
+      ⚠️ 异常告警："计划A 点击成本升至 ¥5.2(目标¥2.5)，建议暂停"<br>
+      🛑 安全机制：单日总花费超预算上限 → 自动暂停所有计划
+    </div>
+  </div>
+
+  <!-- 复用 vs 新增 -->
+  <div style="background:#0f172a;border:1px solid #1e293b;padding:16px;border-radius:12px;">
+    <div style="font-size:13px;color:#94a3b8;">
+      <span style="color:#64ffda;font-weight:700;">复用现有：</span>DashScope AI二创 · CDP矩阵发布 · Chrome Profile管理 · 素材生成卡片 · 通义万相图片<br>
+      <span style="color:#ffd93d;font-weight:700;">需要新增：</span>聚光平台CDP操作 · 聚光数据爬取 · 笔记互动数据回收 · 异常检测告警
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="padding:60px 24px;text-align:center;border-top:1px solid #1e293b;">
+  <div style="color:#64748b;font-size:13px;">数字员工岗位设计 v1.0 · 2026-04-17</div>
+</div>
+
+</body>
+</html>
+
