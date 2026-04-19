@@ -8,6 +8,7 @@ CDN_BASE="https://raw.githubusercontent.com/wenpi/shaihe-office/main/cdp-agent"
 INSTALL_DIR="$HOME/.cdp-agent"
 PLIST_PATH="$HOME/Library/LaunchAgents/com.cdp-agent.plist"
 SERVER_URL="wss://user.aiseo114.com/api/cdp-agent"
+REGISTER_URL="https://user.aiseo114.com/api/cdp-agents"
 
 echo ""
 echo "  CDP Agent 安装程序"
@@ -58,22 +59,29 @@ PKGJSON
 npm install --production --silent 2>/dev/null
 echo "[✓] 依赖安装完成"
 
-# 5. 输入 Token
+# 5. 自动注册获取 Token
 if [ -f "$INSTALL_DIR/config.json" ]; then
   echo "[✓] 已有 Token 配置"
 else
-  echo ""
-  echo "  请输入服务器分配的 Token"
-  echo "  (联系管理员获取)"
-  echo ""
-  read -p "  Token: " TOKEN
+  # 用 macOS 用户名作为 user_id
+  USER_ID=$(whoami)
+  USER_NAME=$(id -F 2>/dev/null || echo "$USER_ID")
+  echo "[↑] 注册 Agent: $USER_NAME ($USER_ID)..."
+
+  RESP=$(curl -s -X PUT "$REGISTER_URL" \
+    -H "Content-Type: application/json" \
+    -d "{\"user_id\":\"$USER_ID\",\"user_name\":\"$USER_NAME\"}")
+
+  TOKEN=$(echo "$RESP" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+
   if [ -z "$TOKEN" ]; then
-    echo "[!] Token 不能为空"
+    echo "[!] 注册失败: $RESP"
     exit 1
   fi
+
   echo "{\"token\":\"$TOKEN\"}" > "$INSTALL_DIR/config.json"
   chmod 600 "$INSTALL_DIR/config.json"
-  echo "[✓] Token 已保存"
+  echo "[✓] Token 已获取并保存"
 fi
 
 # 6. 创建 launchd 服务（开机自启 + 崩溃重启）
