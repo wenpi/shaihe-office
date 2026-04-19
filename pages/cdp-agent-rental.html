@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDP Agent & 账号租赁系统 — 技术方案</title>
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; color: #e0e0e0; background: #0a0a1a; line-height: 1.7; }
+a { color: #64ffda; text-decoration: none; }
+.hero { background: linear-gradient(135deg, #0a0a2e 0%, #1a1a3e 50%, #0d2847 100%); padding: 80px 24px 60px; text-align: center; }
+.hero h1 { font-size: clamp(32px, 6vw, 52px); font-weight: 800; color: #fff; margin-bottom: 16px; line-height: 1.2; }
+.hero p { font-size: 18px; color: #94a3b8; max-width: 700px; margin: 0 auto 28px; }
+.hb { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.hb span { background: rgba(100,255,218,.1); border: 1px solid rgba(100,255,218,.3); border-radius: 20px; padding: 6px 16px; font-size: 13px; color: #64ffda; }
+.s { padding: 60px 24px; max-width: 1100px; margin: 0 auto; }
+.st { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.ss { color: #64ffda; font-size: 14px; margin-bottom: 32px; }
+hr { border: none; border-top: 1px solid #1e293b; margin: 0 24px; }
+.g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.c { background: #111827; padding: 24px; border-radius: 12px; }
+.c h3 { color: #64ffda; font-size: 16px; margin-bottom: 8px; }
+.c p { color: #94a3b8; font-size: 13px; }
+.n { font-size: 36px; font-weight: 800; color: #64ffda; }
+.nl { color: #64748b; font-size: 12px; }
+.tl { display:flex;align-items:flex-start;gap:16px;margin-bottom:20px; }
+.tb { color:#fff;padding:4px 12px;border-radius:4px;font-weight:700;white-space:nowrap; }
+.code { background:#0f172a;padding:16px;border-radius:8px;font-family:'Fira Code',monospace;font-size:12px;color:#94a3b8;overflow-x:auto;white-space:pre;line-height:1.5; }
+@media (max-width: 768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- P1: 封面 -->
+<div class="hero">
+  <h1>CDP Agent & 账号租赁系统</h1>
+  <p>基于 Chrome DevTools Protocol 的远程浏览器操控引擎，让账号像云服务器一样按需租用</p>
+  <div class="hb">
+    <span>CDP Agent 客户端</span><span>WebSocket 实时通信</span><span>账号市场</span><span>任务调度</span>
+  </div>
+  <div style="margin-top:32px;color:#64748b;font-size:13px;">号主挂机赚租金 · 租客远程下任务 · 平台撮合抽佣</div>
+</div>
+<hr>
+
+<!-- P2: CDP Agent 是什么 -->
+<div class="s">
+  <div class="st">CDP Agent — 远程浏览器操控引擎</div>
+  <div class="ss">Chrome DevTools Protocol · 真实浏览器 · 零风控</div>
+  <div class="c" style="margin-bottom:16px;">
+    <h3>核心原理</h3>
+    <p style="margin-top:8px;">CDP Agent 是一个轻量级 Node.js 客户端（< 10MB），通过 Chrome DevTools Protocol 连接本地已打开的 Chrome 浏览器。它不是模拟器，而是直接操控真实浏览器——使用已登录的账号，像真人一样点击、输入、滚动、截图。</p>
+    <div class="code" style="margin-top:12px;">号主电脑                          云端服务器
+┌─────────────┐    WebSocket     ┌──────────────┐
+│ Chrome 浏览器 │◄── CDP ──┐      │ TrafficEngine │
+│ (已登录账号)  │          │      │  - 任务调度    │
+└─────────────┘    ┌──────┴───┐  │  - 结果存储    │
+                   │ CDP Agent │◄─┤  - 状态监控    │
+                   │ (Node.js) │  └──────────────┘
+                   └──────────┘
+                   puppeteer-core</div>
+  </div>
+  <div class="g3">
+    <div class="c" style="text-align:center;border-top:3px solid #3b82f6;">
+      <div style="font-size:28px;">🔌</div>
+      <h3 style="color:#3b82f6;">连接方式</h3>
+      <p>通过 Chrome 远程调试端口<br>(--remote-debugging-port)<br>连接已运行的浏览器实例</p>
+    </div>
+    <div class="c" style="text-align:center;border-top:3px solid #22c55e;">
+      <div style="font-size:28px;">🌐</div>
+      <h3 style="color:#22c55e;">通信协议</h3>
+      <p>客户端与服务器通过<br>WebSocket 长连接通信<br>心跳保活 + 断线重连</p>
+    </div>
+    <div class="c" style="text-align:center;border-top:3px solid #f97316;">
+      <div style="font-size:28px;">🛡️</div>
+      <h3 style="color:#f97316;">安全机制</h3>
+      <p>Token 认证 + 操作截图<br>号主无需给出密码<br>敏感操作被禁止</p>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- P3: CDP Agent 能做什么 -->
+<div class="s">
+  <div class="st">CDP Agent 已实现的能力</div>
+  <div class="ss">基于 puppeteer-core 的浏览器自动化任务</div>
+  <div class="g2">
+    <div class="c" style="border-left:3px solid #3b82f6;">
+      <h3 style="color:#3b82f6;">基础能力</h3>
+      <p><b style="color:#e0e0e0;">cdp_navigate</b> — 打开任意网页<br>
+      <b style="color:#e0e0e0;">cdp_screenshot</b> — 全页面截图<br>
+      <b style="color:#e0e0e0;">cdp_click</b> — 点击指定元素<br>
+      <b style="color:#e0e0e0;">cdp_type</b> — 输入文本内容</p>
+    </div>
+    <div class="c" style="border-left:3px solid #22c55e;">
+      <h3 style="color:#22c55e;">小红书专用</h3>
+      <p><b style="color:#e0e0e0;">account_detect</b> — 自动检测账号信息<br>
+      <b style="color:#e0e0e0;">publish_note</b> — 发布图文笔记<br>
+      <b style="color:#e0e0e0;">reply_comment</b> — 回复评论<br>
+      <b style="color:#e0e0e0;">like_note</b> — 点赞笔记<br>
+      <b style="color:#e0e0e0;">follow_user</b> — 关注用户</p>
+    </div>
+  </div>
+  <div class="c" style="margin-top:16px;">
+    <h3>客户端生命周期</h3>
+    <div class="code" style="margin-top:8px;">启动 → 连接 Chrome → WebSocket 认证 → 等待任务 → 执行 → 截图 → 回传结果
+  ↑                                                              │
+  └──────────── 心跳保活（30s） ◄── 断线自动重连 ◄──────────────┘</div>
+  </div>
+</div>
+<hr>
+
+<!-- P4: 租号系统架构 -->
+<div class="s">
+  <div class="st">账号租赁系统 — 让账号像云服务器一样出租</div>
+  <div class="ss">号主挂机赚钱 · 租客远程操作 · 平台撮合交易</div>
+  <div class="c" style="margin-bottom:16px;">
+    <div class="code">┌──────────────┐                    ┌──────────────────┐
+│  号主 (Owner) │                    │  租客 (Renter)    │
+│  CDP Agent    │◄── WebSocket ────►│  TrafficEngine    │
+│  本地 Chrome  │    任务下发/结果    │  网页后台         │
+└──────┬───────┘                    └────────┬─────────┘
+       │         ┌──────────────┐            │
+       └────────►│  TrafficEngine │◄───────────┘
+                 │  服务器        │
+                 │  - 账号市场    │
+                 │  - 订单管理    │
+                 │  - 任务调度    │
+                 └──────┬───────┘
+                   ┌────▼────┐
+                   │ Supabase │
+                   └──────────┘</div>
+  </div>
+  <div class="g3">
+    <div class="c" style="text-align:center;border-top:3px solid #a78bfa;">
+      <div style="font-size:28px;">👤</div>
+      <h3 style="color:#a78bfa;">号主 Owner</h3>
+      <p>运行 CDP Agent<br>挂上社交平台账号<br>设置日租价格<br>赚取租金收入</p>
+    </div>
+    <div class="c" style="text-align:center;border-top:3px solid #f97316;">
+      <div style="font-size:28px;">🛒</div>
+      <h3 style="color:#f97316;">租客 Renter</h3>
+      <p>浏览账号市场<br>选号下单租用<br>远程下发任务<br>查看执行结果</p>
+    </div>
+    <div class="c" style="text-align:center;border-top:3px solid #64ffda;">
+      <div style="font-size:28px;">🏪</div>
+      <h3 style="color:#64ffda;">平台 Platform</h3>
+      <p>撮合交易<br>任务调度路由<br>安全约束<br>抽佣结算</p>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- P5: 号主上架流程 -->
+<div class="s">
+  <div class="st">号主侧 — 一键挂号，自动上架</div>
+  <div class="ss">启动 CDP Agent 即自动检测账号信息并上架到市场</div>
+  <div style="background:#111827;padding:24px;border-radius:12px;font-size:14px;">
+    <div class="tl"><div class="tb" style="background:#3b82f6;">Step 1</div><div><div style="color:#3b82f6;font-weight:700;">启动 CDP Agent</div><div style="color:#94a3b8;">号主运行客户端，Token 认证连接服务器，WebSocket 长连接建立</div></div></div>
+    <div class="tl"><div class="tb" style="background:#22c55e;">Step 2</div><div><div style="color:#22c55e;font-weight:700;">自动检测账号</div><div style="color:#94a3b8;">服务器下发 account_detect 任务，打开小红书个人主页，提取昵称、粉丝数、获赞数、头像、简介</div></div></div>
+    <div class="tl"><div class="tb" style="background:#f97316;">Step 3</div><div><div style="color:#f97316;font-weight:700;">写入账号市场</div><div style="color:#94a3b8;">检测结果自动写入 accounts_market 表，状态设为 available，账号上架</div></div></div>
+    <div class="tl"><div class="tb" style="background:#a78bfa;">Step 4</div><div><div style="color:#a78bfa;font-weight:700;">设置出租参数</div><div style="color:#94a3b8;">号主在网页设置日租价格、允许的操作类型、每日最大任务数</div></div></div>
+    <div class="tl" style="margin-bottom:0;"><div class="tb" style="background:#ef4444;">离线</div><div><div style="color:#ef4444;font-weight:700;">自动下架</div><div style="color:#94a3b8;">CDP Agent 断开连接时，自动将 accounts_market 状态设为 offline</div></div></div>
+  </div>
+</div>
+<hr>
+
+<!-- P6: 租客使用流程 -->
+<div class="s">
+  <div class="st">租客侧 — 浏览市场，租号下任务</div>
+  <div class="ss">从选号到执行，全流程网页操作</div>
+  <div style="background:#111827;padding:24px;border-radius:12px;font-size:14px;margin-bottom:16px;">
+    <div class="tl"><div class="tb" style="background:#3b82f6;">浏览</div><div><div style="color:#3b82f6;font-weight:700;">账号市场 /market</div><div style="color:#94a3b8;">浏览所有在线可租账号，按粉丝数、价格、平台筛选</div></div></div>
+    <div class="tl"><div class="tb" style="background:#22c55e;">下单</div><div><div style="color:#22c55e;font-weight:700;">选号租用 /market/[id]</div><div style="color:#94a3b8;">查看账号详情 → 选择租期（1/7/30天）→ 确认订单，总价 = 日租价 × 天数</div></div></div>
+    <div class="tl"><div class="tb" style="background:#f97316;">下发</div><div><div style="color:#f97316;font-weight:700;">任务下发 /my-rentals/[orderId]</div><div style="color:#94a3b8;">选择任务类型 → 填写参数 → 提交，任务通过 WebSocket 路由到号主 CDP Agent</div></div></div>
+    <div class="tl" style="margin-bottom:0;"><div class="tb" style="background:#a78bfa;">查看</div><div><div style="color:#a78bfa;font-weight:700;">结果追踪</div><div style="color:#94a3b8;">实时查看任务状态（排队/执行中/完成/失败）和执行截图</div></div></div>
+  </div>
+  <div class="g4">
+    <div class="c" style="text-align:center;"><div style="color:#3b82f6;font-size:13px;font-weight:700;">发笔记</div><div style="color:#64748b;font-size:11px;">标题+正文+图片</div></div>
+    <div class="c" style="text-align:center;"><div style="color:#22c55e;font-size:13px;font-weight:700;">回评论</div><div style="color:#64748b;font-size:11px;">指定笔记+回复内容</div></div>
+    <div class="c" style="text-align:center;"><div style="color:#f97316;font-size:13px;font-weight:700;">点赞</div><div style="color:#64748b;font-size:11px;">指定笔记URL</div></div>
+    <div class="c" style="text-align:center;"><div style="color:#ef4444;font-size:13px;font-weight:700;">关注</div><div style="color:#64748b;font-size:11px;">指定用户主页</div></div>
+  </div>
+</div>
+<hr>
+
+<!-- P7: 任务执行流程 -->
+<div class="s">
+  <div class="st">任务执行全链路</div>
+  <div class="ss">从租客点击"提交"到看到执行截图，全自动完成</div>
+  <div class="c">
+    <div class="code">租客提交任务
+  │
+  ▼ 校验 5 步
+  ① 订单状态 = active？
+  ② 租期未过期？
+  ③ 账号匹配？
+  ④ 任务类型在 allowed_tasks 内？
+  ⑤ 今日任务数未超 max_daily_tasks？
+  │
+  ▼ 写入数据库
+  rental_tasks 表（status: queued）
+  │
+  ▼ WebSocket 路由
+  查 accounts_market → agent_id → cdp_agents
+  推送到号主 CDP Agent
+  │
+  ▼ Agent 执行
+  puppeteer-core 操控 Chrome 完成操作
+  自动截图作为凭证
+  │
+  ▼ 回传结果
+  更新 rental_tasks（status: done/failed）
+  租客页面实时刷新看到结果</div>
+  </div>
+</div>
+<hr>
+
+<!-- P8: 数据库设计 -->
+<div class="s">
+  <div class="st">数据库设计 — 3 张核心表</div>
+  <div class="ss">Supabase PostgreSQL · 复用现有 cdp_agents 表</div>
+  <div class="g3">
+    <div class="c" style="border-top:3px solid #3b82f6;">
+      <h3 style="color:#3b82f6;">accounts_market</h3>
+      <p style="color:#64748b;font-size:11px;margin-bottom:8px;">账号市场</p>
+      <p><span style="color:#e0e0e0;">agent_id</span> → cdp_agents<br>
+      platform · nickname<br>
+      followers · likes · bio<br>
+      daily_price · allowed_tasks<br>
+      max_daily_tasks<br>
+      status: available/rented/offline</p>
+    </div>
+    <div class="c" style="border-top:3px solid #22c55e;">
+      <h3 style="color:#22c55e;">rental_orders</h3>
+      <p style="color:#64748b;font-size:11px;margin-bottom:8px;">租赁订单</p>
+      <p><span style="color:#e0e0e0;">account_id</span> → accounts_market<br>
+      renter_id · start_time<br>
+      end_time · daily_price<br>
+      total_price<br>
+      status: pending/active/<br>completed/cancelled</p>
+    </div>
+    <div class="c" style="border-top:3px solid #f97316;">
+      <h3 style="color:#f97316;">rental_tasks</h3>
+      <p style="color:#64748b;font-size:11px;margin-bottom:8px;">租赁任务</p>
+      <p><span style="color:#e0e0e0;">order_id</span> → rental_orders<br>
+      account_id · task_type<br>
+      params (jsonb)<br>
+      result (jsonb)<br>
+      screenshot_url<br>
+      status: queued/running/done/failed</p>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- P9: 安全约束 -->
+<div class="s">
+  <div class="st">安全约束 — 号主权益保护</div>
+  <div class="ss">多层校验确保账号安全</div>
+  <div class="g2">
+    <div class="c" style="border-left:3px solid #22c55e;"><h3 style="color:#22c55e;">无需密码</h3><p>号主只需挂机运行 CDP Agent，不需要给出任何账号密码</p></div>
+    <div class="c" style="border-left:3px solid #3b82f6;"><h3 style="color:#3b82f6;">操作白名单</h3><p>号主自定义 allowed_tasks，只允许指定类型的操作</p></div>
+    <div class="c" style="border-left:3px solid #f97316;"><h3 style="color:#f97316;">日限额控制</h3><p>max_daily_tasks 限制每日最大任务数，防止过度使用</p></div>
+    <div class="c" style="border-left:3px solid #a78bfa;"><h3 style="color:#a78bfa;">操作截图</h3><p>每个任务执行后自动截图存档，号主可随时查看操作记录</p></div>
+    <div class="c" style="border-left:3px solid #ef4444;"><h3 style="color:#ef4444;">禁止敏感操作</h3><p>改密码、绑定手机、注销等敏感操作不在任务类型中</p></div>
+    <div class="c" style="border-left:3px solid #ffd93d;"><h3 style="color:#ffd93d;">紧急下架</h3><p>号主可随时暂停出租，CDP Agent 离线自动下架</p></div>
+  </div>
+</div>
+<hr>
+
+<!-- P10: 技术栈 -->
+<div class="s">
+  <div class="st">技术栈全景</div>
+  <div class="ss">前后端 + 客户端 + 数据库 完整实现</div>
+  <div class="g2">
+    <div class="c" style="border-top:3px solid #3b82f6;">
+      <h3 style="color:#3b82f6;">服务端</h3>
+      <p>Next.js 14 (App Router)<br>API Routes × 3 组<br>Service Layer × 2<br>WebSocket (ws-handler.js)<br>Supabase PostgreSQL</p>
+    </div>
+    <div class="c" style="border-top:3px solid #22c55e;">
+      <h3 style="color:#22c55e;">前端页面</h3>
+      <p>/market — 账号市场<br>/market/[id] — 账号详情+下单<br>/my-rentals — 我的租号<br>/my-rentals/[orderId] — 任务下发<br>/my-accounts — 我的挂号</p>
+    </div>
+    <div class="c" style="border-top:3px solid #f97316;">
+      <h3 style="color:#f97316;">CDP Agent 客户端</h3>
+      <p>Node.js + puppeteer-core<br>WebSocket 长连接<br>心跳保活 30s<br>断线自动重连<br>任务执行 + 截图</p>
+    </div>
+    <div class="c" style="border-top:3px solid #a78bfa;">
+      <h3 style="color:#a78bfa;">多平台扩展</h3>
+      <p>platform 字段区分平台<br>MVP: 小红书<br>预留: 抖音 · 视频号 · 知乎<br>扩展只需加 task handler<br>无需改数据库结构</p>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- P11: 数据指标 -->
+<div class="s">
+  <div class="st">系统关键指标</div>
+  <div class="ss">已实现并验证的核心能力</div>
+  <div class="g4" style="margin-bottom:24px;">
+    <div class="c" style="text-align:center;"><div class="n">&lt;1s</div><div class="nl">任务下发延迟</div></div>
+    <div class="c" style="text-align:center;"><div class="n">5</div><div class="nl">小红书任务类型</div></div>
+    <div class="c" style="text-align:center;"><div class="n">30s</div><div class="nl">心跳保活间隔</div></div>
+    <div class="c" style="text-align:center;"><div class="n">50</div><div class="nl">默认日任务上限</div></div>
+  </div>
+  <div class="c">
+    <h3>计费模型</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:12px;">
+      <div style="background:#1e293b;padding:16px;border-radius:8px;text-align:center;">
+        <div style="color:#64ffda;font-size:11px;">1 天</div>
+        <div style="color:#64ffda;font-size:24px;font-weight:800;">日租价 × 1</div>
+      </div>
+      <div style="background:#1e293b;padding:16px;border-radius:8px;text-align:center;">
+        <div style="color:#f97316;font-size:11px;">7 天</div>
+        <div style="color:#f97316;font-size:24px;font-weight:800;">日租价 × 7</div>
+      </div>
+      <div style="background:#1e293b;padding:16px;border-radius:8px;text-align:center;">
+        <div style="color:#a78bfa;font-size:11px;">30 天</div>
+        <div style="color:#a78bfa;font-size:24px;font-weight:800;">日租价 × 30</div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- P12: CTA -->
+<div style="padding:80px 24px;text-align:center;background:linear-gradient(135deg, #0d2847 0%, #1a1a3e 100%);">
+  <div style="font-size:clamp(24px,4vw,36px);font-weight:800;color:#fff;margin-bottom:16px;">账号即服务 · Account as a Service</div>
+  <div style="color:#94a3b8;font-size:16px;max-width:600px;margin:0 auto 32px;">号主挂机赚租金，租客按需用账号。<br>CDP Agent 让社交平台账号变成可编程的云资源。</div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <a href="tel:18868807854" style="background:#64ffda;color:#0a0a1a;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700;">立即咨询</a>
+    <a href="https://user.aiseo114.com/market" style="border:2px solid rgba(100,255,218,.4);color:#64ffda;padding:14px 32px;border-radius:8px;font-size:16px;">进入账号市场</a>
+  </div>
+</div>
+
+<div style="padding:32px 24px;text-align:center;border-top:1px solid #1e293b;">
+  <div style="color:#64748b;font-size:12px;">CDP Agent & 账号租赁系统 v1.0 · 2026</div>
+</div>
+</body>
+</html>
