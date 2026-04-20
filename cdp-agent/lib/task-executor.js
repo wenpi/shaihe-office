@@ -38,13 +38,14 @@ async function executeTask(browser, task, onProgress) {
           extracted[key] = await page.$$eval(sel, els => els.map(e => e.textContent?.trim()))
         }
         result = extracted; break
+      case 'xhs_login_wait':
       case 'account_detect':
       case 'publish_note':
       case 'reply_comment':
       case 'like_note':
       case 'follow_user': {
         const xhs = require('./xhs-tasks')
-        const handler = { account_detect: xhs.accountDetect, publish_note: xhs.publishNote, reply_comment: xhs.replyComment, like_note: xhs.likeNote, follow_user: xhs.followUser }[task_type]
+        const handler = { xhs_login_wait: xhs.xhsLoginWait, account_detect: xhs.accountDetect, publish_note: xhs.publishNote, reply_comment: xhs.replyComment, like_note: xhs.likeNote, follow_user: xhs.followUser }[task_type]
         result = await handler(page, task.params || task)
         const shot = await page.screenshot({ encoding: 'base64', type: 'png' })
         result._screenshot = shot
