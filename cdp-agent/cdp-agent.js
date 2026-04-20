@@ -49,8 +49,8 @@ async function main() {
 
   // Step 2: Connect Chrome
   console.log('[chrome] 连接 Chrome...')
-  let browser
-  try { browser = await connectChrome(); console.log('[chrome] 已连接') }
+  let conn
+  try { conn = await connectChrome(); console.log(`[chrome] 已连接 (${conn.mode} mode)`) }
   catch (err) { console.error(`[chrome] 连接失败: ${err.message}`); process.exit(1) }
 
   // Step 3: Connect WebSocket
@@ -74,7 +74,7 @@ async function main() {
     console.log(`[task] 收到: ${task_type} → ${target_url || '(no url)'}`)
     ws.sendStatus('busy', 'connected')
     const start = Date.now()
-    const { success, data } = await executeTask(browser, taskPayload, (p) => ws.sendTaskProgress(task_id, p))
+    const { success, data } = await executeTask(conn, taskPayload, (p) => ws.sendTaskProgress(task_id, p))
     ws.sendTaskResult(task_id, success, data, Date.now() - start)
     ws.sendStatus('online', 'connected')
     console.log(`[task] ${success ? '完成' : '失败'} (${Date.now() - start}ms)`)
@@ -84,7 +84,7 @@ async function main() {
   process.on('SIGINT', () => {
     console.log('\n[agent] shutting down...')
     ws.sendStatus('offline', 'disconnected')
-    browser?.close().catch(() => {})
+    if (conn.browser) conn.browser.disconnect?.()
     setTimeout(() => process.exit(0), 500)
   })
 }
