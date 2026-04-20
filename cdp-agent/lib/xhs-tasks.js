@@ -2,12 +2,9 @@
 // XHS (小红书) task implementations for CDP Agent
 const { humanDelay, humanScroll, humanMouseMove, humanType, browsePageLikeHuman } = require('./human-behavior')
 
-async function xhsLoginWait(page) {
+async function xhsLoginWait(browser) {
   // 从已有的 Chrome tab 中查找小红书页面，不打开新 tab
   console.log('[xhs] 从已有标签页检测小红书登录状态...')
-  const browser = page.browser()
-  // 关掉任务分配的空白 page，不需要它
-  await page.goto('about:blank').catch(() => {})
 
   // 扫描已有 tab 找小红书页面
   async function findXhsPage() {
@@ -25,13 +22,7 @@ async function xhsLoginWait(page) {
   let xhsPage = await findXhsPage()
   if (xhsPage) {
     console.log('[xhs] 找到已登录的小红书标签页，提取账号信息')
-    // 用已有页面导航到个人主页提取信息
-    const currentUrl = xhsPage.url()
-    await xhsPage.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
-    const result = await accountDetect(xhsPage)
-    // 导航回原来的页面，不打扰用户
-    await xhsPage.goto(currentUrl, { waitUntil: 'networkidle2', timeout: 10000 }).catch(() => {})
-    return result
+    return await accountDetect(browser)
   }
 
   // 没找到，静默等待（不开新 tab，不访问小红书）
@@ -42,18 +33,26 @@ async function xhsLoginWait(page) {
     xhsPage = await findXhsPage()
     if (xhsPage) {
       console.log('[xhs] 检测到小红书标签页，提取账号信息')
-      const currentUrl = xhsPage.url()
-      await xhsPage.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
-      const result = await accountDetect(xhsPage)
-      await xhsPage.goto(currentUrl, { waitUntil: 'networkidle2', timeout: 10000 }).catch(() => {})
-      return result
+      return await accountDetect(browser)
     }
   }
 
   return { detected: false, error: 'no_xhs_tab_found' }
 }
 
-async function accountDetect(page) {
+// 工具函数：从已有 tab 找小红书页面
+async function findXhsTab(browser) {
+  const pages = await browser.pages()
+  for (const p of pages) {
+    if (p.url().includes('xiaohongshu.com')) return p
+  }
+  return null
+}
+
+async function accountDetect(browser) {
+  const page = await findXhsTab(browser)
+  if (!page) return { detected: false, error: 'no_xhs_tab' }
+  const currentUrl = page.url()
   await page.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 30000 })
   await browsePageLikeHuman(page, { minStay: 2000, maxStay: 4000 })
   const data = await page.evaluate(() => {
@@ -69,10 +68,14 @@ async function accountDetect(page) {
       verified: !!document.querySelector('[class*="verified"]') || !!document.querySelector('[class*="official"]'),
     }
   })
+  // 导航回原来的页面
+  await page.goto(currentUrl, { waitUntil: 'networkidle2', timeout: 10000 }).catch(() => {})
   return { detected: true, ...data }
 }
 
-async function publishNote(page, params) {
+async function publishNote(browser, params) {
+  const page = await findXhsTab(browser)
+  if (!page) return { error: 'no_xhs_tab' }
   const { title = '', content = '' } = params
   await page.goto('https://creator.xiaohongshu.com/publish/publish', { waitUntil: 'networkidle2', timeout: 30000 })
   await humanDelay(2000, 4000)
@@ -99,7 +102,9 @@ async function publishNote(page, params) {
   return { published: true, title }
 }
 
-async function likeNote(page, params) {
+async function likeNote(browser, params) {
+  const page = await findXhsTab(browser)
+  if (!page) return { error: 'no_xhs_tab' }
   const { note_url } = params
   await page.goto(note_url, { waitUntil: 'networkidle2', timeout: 30000 })
   // 先像真人一样浏览内容
@@ -112,7 +117,9 @@ async function likeNote(page, params) {
   return { liked: true, url: note_url }
 }
 
-async function replyComment(page, params) {
+async function replyComment(browser, params) {
+  const page = await findXhsTab(browser)
+  if (!page) return { error: 'no_xhs_tab' }
   const { note_url, reply_text = '' } = params
   await page.goto(note_url, { waitUntil: 'networkidle2', timeout: 30000 })
   // 先浏览帖子内容，像真人一样阅读
@@ -135,7 +142,9 @@ async function replyComment(page, params) {
   return { replied: true, text: reply_text }
 }
 
-async function followUser(page, params) {
+async function followUser(browser, params) {
+  const page = await findXhsTab(browser)
+  if (!page) return { error: 'no_xhs_tab' }
   const { user_url } = params
   await page.goto(user_url, { waitUntil: 'networkidle2', timeout: 30000 })
   // 浏览用户主页
