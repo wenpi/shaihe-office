@@ -61,7 +61,11 @@ async function launchChrome() {
 
 async function connectChrome() {
   let port = await findExistingChrome()
-  if (!port) port = await launchChrome()
+  if (!port) {
+    console.error('[chrome] 未检测到 Chrome，请先手动打开 Chrome：')
+    console.error('  /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222')
+    throw new Error('Chrome not running with --remote-debugging-port')
+  }
   const browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${port}` })
   console.log(`[chrome] connected on port ${port}`)
   // 对所有新页面注入反检测脚本

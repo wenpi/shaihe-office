@@ -5,7 +5,6 @@ async function executeTask(browser, task, onProgress) {
   const { task_type, target_url, timeout_ms = 60000 } = task
   const page = await browser.newPage()
   try {
-    await page.setViewport(null)
     if (target_url) {
       onProgress?.({ step: 'navigating', url: target_url })
       await page.goto(target_url, { waitUntil: 'networkidle2', timeout: timeout_ms })
