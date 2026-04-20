@@ -3,48 +3,54 @@
 const { humanDelay, humanScroll, humanMouseMove, humanType, browsePageLikeHuman } = require('./human-behavior')
 
 async function xhsLoginWait(page) {
-  // 检测小红书登录状态，已登录则提取账号信息，未登录则等待用户自行登录
-  // 不主动打开新页面，不干扰用户操作
-  console.log('[xhs] 检测小红书登录状态...')
-
-  // 先访问个人主页看是否已登录
-  await page.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
-
-  // 检查是否跳转到了登录页
-  const isLoginPage = () => page.url().includes('/login') || page.url().includes('/passport')
-
-  if (!await isLoginPage()) {
-    // 已登录，直接提取账号信息
-    console.log('[xhs] 已登录，提取账号信息')
-    return await accountDetect(page)
-  }
-
-  // 未登录，关闭这个 tab，让用户自己去登录
-  console.log('[xhs] 未登录，等待用户自行登录小红书（每30秒检测一次，最多等5分钟）')
+  // 从已有的 Chrome tab 中查找小红书页面，不打开新 tab
+  console.log('[xhs] 从已有标签页检测小红书登录状态...')
+  const browser = page.browser()
+  // 关掉任务分配的空白 page，不需要它
   await page.goto('about:blank').catch(() => {})
 
-  // 轮询等待：每30秒用一个新 tab 静默检测，检测完立即关掉
-  const browser = page.browser()
-  for (let i = 0; i < 10; i++) {
-    await new Promise(r => setTimeout(r, 30000))
-    let checkPage
-    try {
-      checkPage = await browser.newPage()
-      await checkPage.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 10000 })
-      const url = checkPage.url()
-      if (!url.includes('/login') && !url.includes('/passport')) {
-        console.log('[xhs] 检测到已登录，提取账号信息')
-        const result = await accountDetect(checkPage)
-        await checkPage.close().catch(() => {})
-        return result
+  // 扫描已有 tab 找小红书页面
+  async function findXhsPage() {
+    const pages = await browser.pages()
+    for (const p of pages) {
+      const url = p.url()
+      if (url.includes('xiaohongshu.com') && !url.includes('/login') && !url.includes('/passport')) {
+        return p
       }
-      await checkPage.close().catch(() => {})
-    } catch {
-      if (checkPage) await checkPage.close().catch(() => {})
+    }
+    return null
+  }
+
+  // 先看已有 tab 里有没有已登录的小红书
+  let xhsPage = await findXhsPage()
+  if (xhsPage) {
+    console.log('[xhs] 找到已登录的小红书标签页，提取账号信息')
+    // 用已有页面导航到个人主页提取信息
+    const currentUrl = xhsPage.url()
+    await xhsPage.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
+    const result = await accountDetect(xhsPage)
+    // 导航回原来的页面，不打扰用户
+    await xhsPage.goto(currentUrl, { waitUntil: 'networkidle2', timeout: 10000 }).catch(() => {})
+    return result
+  }
+
+  // 没找到，静默等待（不开新 tab，不访问小红书）
+  // 每60秒扫描一次已有 tab，最多等10分钟
+  console.log('[xhs] 未找到小红书标签页，等待用户打开并登录（每60秒检测一次）')
+  for (let i = 0; i < 10; i++) {
+    await new Promise(r => setTimeout(r, 60000))
+    xhsPage = await findXhsPage()
+    if (xhsPage) {
+      console.log('[xhs] 检测到小红书标签页，提取账号信息')
+      const currentUrl = xhsPage.url()
+      await xhsPage.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
+      const result = await accountDetect(xhsPage)
+      await xhsPage.goto(currentUrl, { waitUntil: 'networkidle2', timeout: 10000 }).catch(() => {})
+      return result
     }
   }
 
-  return { detected: false, error: 'login_timeout' }
+  return { detected: false, error: 'no_xhs_tab_found' }
 }
 
 async function accountDetect(page) {
