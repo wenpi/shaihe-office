@@ -3,27 +3,47 @@
 const { humanDelay, humanScroll, humanMouseMove, humanType, browsePageLikeHuman } = require('./human-behavior')
 
 async function xhsLoginWait(page) {
-  // 打开小红书首页，等用户扫码登录
-  await page.goto('https://www.xiaohongshu.com', { waitUntil: 'networkidle2', timeout: 30000 })
-  console.log('[xhs] 等待用户登录小红书...')
+  // 检测小红书登录状态，已登录则提取账号信息，未登录则等待用户自行登录
+  // 不主动打开新页面，不干扰用户操作
+  console.log('[xhs] 检测小红书登录状态...')
 
-  // 轮询检测是否已登录（最多等 2 分钟）
-  for (let i = 0; i < 24; i++) {
-    await new Promise(r => setTimeout(r, 5000))
-    const loggedIn = await page.evaluate(() => {
-      // 已登录时页面上会有用户头像或个人中心入口
-      return !!document.querySelector('[class*="avatar"]') ||
-             !!document.querySelector('[class*="user-info"]') ||
-             !!document.querySelector('a[href*="/user/profile"]')
-    }).catch(() => false)
+  // 先访问个人主页看是否已登录
+  await page.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
 
-    if (loggedIn) {
-      console.log('[xhs] 检测到已登录，开始提取账号信息')
-      // 登录成功，跳转到个人主页提取信息
-      return await accountDetect(page)
+  // 检查是否跳转到了登录页
+  const isLoginPage = () => page.url().includes('/login') || page.url().includes('/passport')
+
+  if (!await isLoginPage()) {
+    // 已登录，直接提取账号信息
+    console.log('[xhs] 已登录，提取账号信息')
+    return await accountDetect(page)
+  }
+
+  // 未登录，关闭这个 tab，让用户自己去登录
+  console.log('[xhs] 未登录，等待用户自行登录小红书（每30秒检测一次，最多等5分钟）')
+  await page.goto('about:blank').catch(() => {})
+
+  // 轮询等待：每30秒用一个新 tab 静默检测，检测完立即关掉
+  const browser = page.browser()
+  for (let i = 0; i < 10; i++) {
+    await new Promise(r => setTimeout(r, 30000))
+    let checkPage
+    try {
+      checkPage = await browser.newPage()
+      await checkPage.goto('https://www.xiaohongshu.com/user/profile/me', { waitUntil: 'networkidle2', timeout: 10000 })
+      const url = checkPage.url()
+      if (!url.includes('/login') && !url.includes('/passport')) {
+        console.log('[xhs] 检测到已登录，提取账号信息')
+        const result = await accountDetect(checkPage)
+        await checkPage.close().catch(() => {})
+        return result
+      }
+      await checkPage.close().catch(() => {})
+    } catch {
+      if (checkPage) await checkPage.close().catch(() => {})
     }
   }
-  // 超时未登录
+
   return { detected: false, error: 'login_timeout' }
 }
 
