@@ -4,7 +4,7 @@ const { humanDelay, browsePageLikeHuman } = require('./human-behavior')
 
 const PLATFORM_TASKS = new Set([
   'xhs_login_wait', 'account_detect', 'publish_note', 'reply_comment', 'like_note', 'follow_user', 'xhs_scan_comments',
-  'dy_login_wait', 'dy_account_detect', 'dy_publish_note',
+  'dy_login_wait', 'dy_account_detect', 'dy_publish_note', 'dy_scan_comments',
   'wxvideo_login_wait', 'wxvideo_account_detect', 'wxvideo_publish',
   'ks_login_wait', 'ks_account_detect', 'ks_publish_note',
 ])
@@ -142,7 +142,7 @@ async function executePlatformTask(conn, task) {
     let handler, mod
     if (task_type.startsWith('dy_')) {
       mod = require('./dy-tasks')
-      handler = { dy_login_wait: mod.dyLoginWait, dy_account_detect: mod.dyAccountDetect, dy_publish_note: mod.dyPublishNote }[task_type]
+      handler = { dy_login_wait: mod.dyLoginWait, dy_account_detect: mod.dyAccountDetect, dy_publish_note: mod.dyPublishNote, dy_scan_comments: mod.dyScanComments }[task_type]
     } else if (task_type.startsWith('wxvideo_')) {
       mod = require('./wxvideo-tasks')
       handler = { wxvideo_login_wait: mod.wxvideoLoginWait, wxvideo_account_detect: mod.wxvideoAccountDetect, wxvideo_publish: mod.wxvideoPublish }[task_type]
