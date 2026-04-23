@@ -1,51 +1,59 @@
 // traffic-engine/cdp-agent/lib/wxvideo-tasks.js
-// 微信视频号 task implementations for CDP Agent
-const { humanDelay, humanType, browsePageLikeHuman } = require('./human-behavior')
+const { createTab } = require('./tab-adapter')
 
-async function wxvideoLoginWait(page) {
+const WX_HOME = 'https://channels.weixin.qq.com/platform'
+const WX_UPLOAD = 'https://channels.weixin.qq.com/platform/post/create'
+
+async function wxvideoLoginWait(conn) {
   console.log('[wxvideo] 检测视频号登录状态...')
-  await page.goto('https://channels.weixin.qq.com/platform', { waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
+  const tab = createTab(conn)
+  await tab.goto(WX_HOME)
 
-  const isLoginPage = () => {
-    const url = page.url()
-    return url.includes('/login') || url.includes('/passport') || url.includes('weixin.qq.com/cgi-bin')
-  }
+  const url = await tab.url()
+  const isLogin = url.includes('/login') || url.includes('/passport') || url.includes('weixin.qq.com/cgi-bin')
 
-  if (!isLoginPage()) {
+  if (!isLogin) {
     console.log('[wxvideo] 已登录，提取账号信息')
-    return await wxvideoAccountDetect(page)
+    const result = await _detectAccount(tab)
+    await tab.close()
+    return result
   }
 
   console.log('[wxvideo] 未登录，等待用户自行登录（每30秒检测一次，最多等5分钟）')
-  await page.goto('about:blank').catch(() => {})
+  await tab.close()
 
-  const browser = page.browser()
   for (let i = 0; i < 10; i++) {
     await new Promise(r => setTimeout(r, 30000))
-    let checkPage
+    const checkTab = createTab(conn)
     try {
-      checkPage = await browser.newPage()
-      await checkPage.goto('https://channels.weixin.qq.com/platform', { waitUntil: 'networkidle2', timeout: 10000 })
-      const url = checkPage.url()
-      if (!url.includes('/login') && !url.includes('/passport') && !url.includes('weixin.qq.com/cgi-bin')) {
+      await checkTab.goto(WX_HOME)
+      const checkUrl = await checkTab.url()
+      if (!checkUrl.includes('/login') && !checkUrl.includes('/passport') && !checkUrl.includes('weixin.qq.com/cgi-bin')) {
         console.log('[wxvideo] 检测到已登录，提取账号信息')
-        const result = await wxvideoAccountDetect(checkPage)
-        await checkPage.close().catch(() => {})
+        const result = await _detectAccount(checkTab)
+        await checkTab.close()
         return result
       }
-      await checkPage.close().catch(() => {})
+      await checkTab.close()
     } catch {
-      if (checkPage) await checkPage.close().catch(() => {})
+      await checkTab.close()
     }
   }
 
   return { detected: false, error: 'login_timeout' }
 }
 
-async function wxvideoAccountDetect(page) {
-  await page.goto('https://channels.weixin.qq.com/platform', { waitUntil: 'networkidle2', timeout: 30000 })
-  await browsePageLikeHuman(page, { minStay: 2000, maxStay: 4000 })
-  const data = await page.evaluate(() => {
+async function wxvideoAccountDetect(conn) {
+  const tab = createTab(conn)
+  await tab.goto(WX_HOME)
+  await tab.wait(2000)
+  const result = await _detectAccount(tab)
+  await tab.close()
+  return result
+}
+
+async function _detectAccount(tab) {
+  const data = await tab.eval(`(() => {
     const text = (sel) => document.querySelector(sel)?.textContent?.trim() || ''
     const attr = (sel, a) => document.querySelector(sel)?.getAttribute(a) || ''
     return {
@@ -55,36 +63,37 @@ async function wxvideoAccountDetect(page) {
       followers: text('[class*="follower"] [class*="count"]') || text('[class*="fans"] [class*="count"]'),
       likes: text('[class*="like"] [class*="count"]') || text('[class*="liked"] [class*="count"]'),
     }
-  })
+  })()`)
   return { detected: true, platform: 'wxvideo', ...data }
 }
 
-async function wxvideoPublish(page, params) {
+async function wxvideoPublish(conn, params) {
   const { title = '', content = '' } = params
-  await page.goto('https://channels.weixin.qq.com/platform/post/create', { waitUntil: 'networkidle2', timeout: 30000 })
-  await humanDelay(2000, 4000)
+  const tab = createTab(conn)
+  await tab.goto(WX_UPLOAD)
+  await tab.wait(3000)
 
-  await page.waitForSelector('[placeholder*="标题"], [contenteditable][class*="title"]', { timeout: 10000 }).catch(() => {})
-  const titleEl = await page.$('[placeholder*="标题"], input[class*="title"]')
-  if (titleEl) {
-    await titleEl.click({ clickCount: 3 })
-    await humanDelay(300, 800)
-    await humanType(titleEl, title)
+  const titleSel = '[placeholder*="标题"], input[class*="title"]'
+  await tab.click(titleSel).catch(() => {})
+  await tab.wait(500)
+  for (const char of title) {
+    await tab.eval(`document.execCommand('insertText', false, ${JSON.stringify(char)})`)
+    await tab.wait(50)
   }
 
-  await humanDelay(500, 1500)
-  // 视频号使用 contenteditable div 输入正文
-  const contentEl = await page.$('[contenteditable="true"][class*="content"], [contenteditable="true"][class*="editor"], [contenteditable="true"][placeholder*="内容"]')
-  if (contentEl) {
-    await contentEl.click()
-    await humanDelay(300, 800)
-    await humanType(contentEl, content)
+  await tab.wait(800)
+  const contentSel = '[contenteditable="true"][class*="content"], [contenteditable="true"][class*="editor"], [contenteditable="true"][placeholder*="内容"]'
+  await tab.click(contentSel).catch(() => {})
+  await tab.wait(500)
+  for (const char of content) {
+    await tab.eval(`document.execCommand('insertText', false, ${JSON.stringify(char)})`)
+    await tab.wait(30)
   }
 
-  await humanDelay(1000, 3000)
-  const publishBtn = await page.$('button[class*="publish"], button[class*="submit"], [class*="publish-btn"]')
-  if (publishBtn) await publishBtn.click()
-  await humanDelay(2000, 4000)
+  await tab.wait(1500)
+  await tab.click('button[class*="publish"], button[class*="submit"], [class*="publish-btn"]').catch(() => {})
+  await tab.wait(3000)
+  await tab.close()
   return { published: true, title, platform: 'wxvideo' }
 }
 
