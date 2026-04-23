@@ -3,7 +3,7 @@
 const { humanDelay, browsePageLikeHuman } = require('./human-behavior')
 
 const PLATFORM_TASKS = new Set([
-  'xhs_login_wait', 'account_detect', 'publish_note', 'reply_comment', 'like_note', 'follow_user',
+  'xhs_login_wait', 'account_detect', 'publish_note', 'reply_comment', 'like_note', 'follow_user', 'xhs_scan_comments',
   'dy_login_wait', 'dy_account_detect', 'dy_publish_note',
   'wxvideo_login_wait', 'wxvideo_account_detect', 'wxvideo_publish',
   'ks_login_wait', 'ks_account_detect', 'ks_publish_note',
@@ -50,6 +50,20 @@ async function executePuppeteerCdpTask(browser, task, onProgress) {
         result = results.length === 1 ? { result: results[0] } : { results }
         break
       }
+      case 'extract':
+      case 'cdp_extract': {
+        const scripts = task.scripts || task.params?.scripts || []
+        let extractResult = null
+        for (const s of scripts) {
+          if (s.action === 'wait') {
+            await new Promise(r => setTimeout(r, s.ms || 3000))
+          } else if (s.action === 'extract' && s.script) {
+            extractResult = await page.evaluate(s.script)
+          }
+        }
+        result = extractResult
+        break
+      }
       default:
         return { success: false, data: { error: `unknown: ${task_type}` } }
     }
@@ -92,6 +106,27 @@ async function executeProxyCdpTask(conn, task, onProgress) {
         result = results.length === 1 ? { result: results[0] } : { results }
         break
       }
+      case 'extract':
+      case 'cdp_extract': {
+        // 打开 URL → 执行 scripts（wait + extract）
+        const r = await fetch(`${base}/new?url=${encodeURIComponent(target_url)}`)
+        const d = await r.json()
+        const tid = d.targetId
+        const scripts = task.scripts || task.params?.scripts || []
+        let extractResult = null
+        for (const s of scripts) {
+          if (s.action === 'wait') {
+            await new Promise(r => setTimeout(r, s.ms || 3000))
+          } else if (s.action === 'extract' && s.script) {
+            const er = await fetch(`${base}/eval?target=${tid}`, { method: 'POST', body: s.script })
+            extractResult = await er.json()
+          }
+        }
+        // 关掉 tab
+        await fetch(`${base}/close?target=${tid}`).catch(() => {})
+        result = extractResult
+        break
+      }
       default:
         return { success: false, data: { error: `unknown: ${task_type}` } }
     }
@@ -116,12 +151,14 @@ async function executePlatformTask(conn, task) {
       handler = { ks_login_wait: mod.ksLoginWait, ks_account_detect: mod.ksAccountDetect, ks_publish_note: mod.ksPublishNote }[task_type]
     } else {
       mod = require('./xhs-tasks')
-      handler = { xhs_login_wait: mod.xhsLoginWait, account_detect: mod.accountDetect, publish_note: mod.publishNote, reply_comment: mod.replyComment, like_note: mod.likeNote, follow_user: mod.followUser }[task_type]
+      handler = { xhs_login_wait: mod.xhsLoginWait, account_detect: mod.accountDetect, publish_note: mod.publishNote, reply_comment: mod.replyComment, like_note: mod.likeNote, follow_user: mod.followUser, xhs_scan_comments: mod.xhsScanComments }[task_type]
     }
     if (!handler) return { success: false, data: { error: `no handler: ${task_type}` } }
     const result = await handler(conn, task.params || task)
     return { success: true, data: result }
   } catch (err) {
+    console.error(`[task-executor] Error in ${task_type}:`, err.message)
+    console.error(err.stack)
     return { success: false, data: { error: err.message } }
   }
 }
