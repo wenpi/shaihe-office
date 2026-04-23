@@ -1,51 +1,60 @@
 // traffic-engine/cdp-agent/lib/dy-tasks.js
-// 抖音 (Douyin) task implementations for CDP Agent
 const { humanDelay, humanType, browsePageLikeHuman } = require('./human-behavior')
+const { createTab } = require('./tab-adapter')
 
-async function dyLoginWait(page) {
+const DY_HOME = 'https://creator.douyin.com/creator-micro/home'
+const DY_UPLOAD = 'https://creator.douyin.com/creator-micro/content/upload'
+
+async function dyLoginWait(conn) {
   console.log('[dy] 检测抖音登录状态...')
-  await page.goto('https://creator.douyin.com/creator-micro/home', { waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
+  const tab = createTab(conn)
+  await tab.goto(DY_HOME)
 
-  const isLoginPage = () => {
-    const url = page.url()
-    return url.includes('/login') || url.includes('/passport')
-  }
+  const url = await tab.url()
+  const isLogin = url.includes('/login') || url.includes('/passport')
 
-  if (!isLoginPage()) {
+  if (!isLogin) {
     console.log('[dy] 已登录，提取账号信息')
-    return await dyAccountDetect(page)
+    const result = await _detectAccount(tab)
+    await tab.close()
+    return result
   }
 
   console.log('[dy] 未登录，等待用户自行登录（每30秒检测一次，最多等5分钟）')
-  await page.goto('about:blank').catch(() => {})
+  await tab.close()
 
-  const browser = page.browser()
   for (let i = 0; i < 10; i++) {
     await new Promise(r => setTimeout(r, 30000))
-    let checkPage
+    const checkTab = createTab(conn)
     try {
-      checkPage = await browser.newPage()
-      await checkPage.goto('https://creator.douyin.com/creator-micro/home', { waitUntil: 'networkidle2', timeout: 10000 })
-      const url = checkPage.url()
-      if (!url.includes('/login') && !url.includes('/passport')) {
+      await checkTab.goto(DY_HOME)
+      const checkUrl = await checkTab.url()
+      if (!checkUrl.includes('/login') && !checkUrl.includes('/passport')) {
         console.log('[dy] 检测到已登录，提取账号信息')
-        const result = await dyAccountDetect(checkPage)
-        await checkPage.close().catch(() => {})
+        const result = await _detectAccount(checkTab)
+        await checkTab.close()
         return result
       }
-      await checkPage.close().catch(() => {})
+      await checkTab.close()
     } catch {
-      if (checkPage) await checkPage.close().catch(() => {})
+      await checkTab.close()
     }
   }
 
   return { detected: false, error: 'login_timeout' }
 }
 
-async function dyAccountDetect(page) {
-  await page.goto('https://creator.douyin.com/creator-micro/home', { waitUntil: 'networkidle2', timeout: 30000 })
-  await browsePageLikeHuman(page, { minStay: 2000, maxStay: 4000 })
-  const data = await page.evaluate(() => {
+async function dyAccountDetect(conn) {
+  const tab = createTab(conn)
+  await tab.goto(DY_HOME)
+  await tab.wait(2000)
+  const result = await _detectAccount(tab)
+  await tab.close()
+  return result
+}
+
+async function _detectAccount(tab) {
+  const data = await tab.eval(`(() => {
     const text = (sel) => document.querySelector(sel)?.textContent?.trim() || ''
     const attr = (sel, a) => document.querySelector(sel)?.getAttribute(a) || ''
     return {
@@ -55,35 +64,43 @@ async function dyAccountDetect(page) {
       followers: text('[class*="follower"] [class*="count"]') || text('[class*="fans"] [class*="count"]'),
       likes: text('[class*="like"] [class*="count"]') || text('[class*="liked"] [class*="count"]'),
     }
-  })
+  })()`)
   return { detected: true, platform: 'dy', ...data }
 }
 
-async function dyPublishNote(page, params) {
+async function dyPublishNote(conn, params) {
   const { title = '', content = '' } = params
-  await page.goto('https://creator.douyin.com/creator-micro/content/upload', { waitUntil: 'networkidle2', timeout: 30000 })
-  await humanDelay(2000, 4000)
+  const tab = createTab(conn)
+  await tab.goto(DY_UPLOAD)
+  await tab.wait(3000)
 
-  await page.waitForSelector('[placeholder*="标题"], input[class*="title"]', { timeout: 10000 }).catch(() => {})
-  const titleEl = await page.$('[placeholder*="标题"], input[class*="title"]')
-  if (titleEl) {
-    await titleEl.click({ clickCount: 3 })
-    await humanDelay(300, 800)
-    await humanType(titleEl, title)
+  const titleSel = '[placeholder*="标题"], input[class*="title"]'
+  await tab.click(titleSel).catch(() => {})
+  await tab.wait(500)
+  await tab.eval(`(() => {
+    const el = document.querySelector('${titleSel}')
+    if (el) { el.value = ''; el.dispatchEvent(new Event('input', {bubbles:true})) }
+  })()`)
+  await tab.eval(`document.querySelector('${titleSel}')?.focus()`)
+  // 逐字输入 title
+  for (const char of title) {
+    await tab.eval(`document.execCommand('insertText', false, ${JSON.stringify(char)})`)
+    await tab.wait(50)
   }
 
-  await humanDelay(500, 1500)
-  const contentEl = await page.$('textarea[placeholder*="内容"], [class*="content"] textarea, [class*="editor"] textarea')
-  if (contentEl) {
-    await contentEl.click()
-    await humanDelay(300, 800)
-    await humanType(contentEl, content)
+  await tab.wait(800)
+  const contentSel = 'textarea[placeholder*="内容"], [class*="content"] textarea, [class*="editor"] textarea'
+  await tab.click(contentSel).catch(() => {})
+  await tab.wait(500)
+  for (const char of content) {
+    await tab.eval(`document.execCommand('insertText', false, ${JSON.stringify(char)})`)
+    await tab.wait(30)
   }
 
-  await humanDelay(1000, 3000)
-  const publishBtn = await page.$('button[class*="publish"], button[class*="submit"], [class*="publish-btn"]')
-  if (publishBtn) await publishBtn.click()
-  await humanDelay(2000, 4000)
+  await tab.wait(1500)
+  await tab.click('button[class*="publish"], button[class*="submit"], [class*="publish-btn"]').catch(() => {})
+  await tab.wait(3000)
+  await tab.close()
   return { published: true, title, platform: 'dy' }
 }
 
