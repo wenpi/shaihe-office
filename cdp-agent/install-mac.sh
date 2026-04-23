@@ -39,6 +39,7 @@ curl -sL "$CDN_BASE/lib/ws-client.js"          -o "$INSTALL_DIR/lib/ws-client.js
 curl -sL "$CDN_BASE/lib/task-executor.js"      -o "$INSTALL_DIR/lib/task-executor.js"
 curl -sL "$CDN_BASE/lib/xhs-tasks.js"          -o "$INSTALL_DIR/lib/xhs-tasks.js"
 curl -sL "$CDN_BASE/lib/stealth-utils.js"      -o "$INSTALL_DIR/lib/stealth-utils.js"
+curl -sL "$CDN_BASE/lib/tab-adapter.js"        -o "$INSTALL_DIR/lib/tab-adapter.js"
 curl -sL "$CDN_BASE/lib/human-behavior.js"     -o "$INSTALL_DIR/lib/human-behavior.js"
 curl -sL "$CDN_BASE/lib/feishu-auth.js"        -o "$INSTALL_DIR/lib/feishu-auth.js"
 curl -sL "$CDN_BASE/lib/dy-tasks.js"           -o "$INSTALL_DIR/lib/dy-tasks.js"
