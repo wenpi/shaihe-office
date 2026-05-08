@@ -240,7 +240,7 @@ async function dyScanComments(conn, params) {
 
 // 关键词采集：搜索结果列表（不深入评论），复用已有抖音 tab
 async function dyCrawlKeyword(conn, params) {
-  const { keyword, limit = 10 } = params
+  const { keyword, limit = 100 } = params
   if (!keyword) return { error: 'keyword required' }
   console.log(`[dy] 关键词采集: "${keyword}", limit=${limit}`)
 
@@ -252,15 +252,30 @@ async function dyCrawlKeyword(conn, params) {
   } else {
     await tab.goto(searchUrl)
   }
-  await tab.wait(5000)
 
-  const riskCheck = await tab.eval(`(() => {
-    return document.body.textContent.includes('验证') ||
-           document.querySelector('[class*="captcha"], [class*="verify"]') !== null
-  })()`)
-  if (riskCheck) {
+  // 轮询等待搜索结果卡片出现，最多等 20 秒
+  let cardCount = 0
+  for (let i = 0; i < 10; i++) {
+    await tab.wait(2000)
+    const count = await tab.eval(`document.querySelectorAll('.search-result-card').length`)
+    cardCount = typeof count === 'number' ? count : parseInt(count) || 0
+    if (cardCount > 0) break
+    console.log(`[dy] 等待搜索结果... (${(i + 1) * 2}s)`)
+  }
+
+  if (cardCount === 0) {
+    const riskCheck = await tab.eval(`(() => {
+      return document.body.textContent.includes('验证') ||
+             document.querySelector('[class*="captcha"], [class*="verify"]') !== null
+    })()`)
+    if (riskCheck) {
+      console.log('[dy] 检测到风控验证')
+      await tab.close()
+      return { error: 'risk_control', items: [] }
+    }
+    console.log('[dy] 超时未找到搜索结果卡片')
     await tab.close()
-    return { error: 'risk_control', items: [] }
+    return { keyword, items: [] }
   }
 
   const raw = await tab.eval(`(() => {
