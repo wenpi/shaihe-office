@@ -24,7 +24,7 @@ class WsClient extends EventEmitter {
       let msg; try { msg = JSON.parse(raw.toString()) } catch { return }
       if (msg.type === 'auth_ok') { this.connected = true; this.userId = msg.payload?.user_id; console.log(`[ws] authenticated as ${msg.payload?.user_name}`); this.emit('authenticated', msg.payload); return }
       if (msg.type === 'auth_fail') { console.error(`[ws] auth failed: ${msg.payload?.reason}`); this.emit('auth_failed', msg.payload); this.ws.close(); return }
-      if (msg.type === 'ping') { this._send({ type: 'pong', id: msg.id, payload: {} }); return }
+      if (msg.type === 'ping') { console.log('[ws] received ping, sending pong'); this._send({ type: 'pong', id: msg.id, payload: {} }); return }
       if (msg.type === 'task') { this.emit('task', msg.payload); return }
     })
     this.ws.on('close', () => {

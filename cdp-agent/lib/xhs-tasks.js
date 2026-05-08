@@ -1,6 +1,8 @@
 // traffic-engine/cdp-agent/lib/xhs-tasks.js
 // conn = { mode: 'puppeteer', browser } 或 { mode: 'proxy', proxyUrl }
 const { humanMouseMove, humanType } = require('./human-behavior')
+const { generateImage } = require('./image-generator')
+const fs = require('fs')
 
 // 从已有 tab 找小红书页面
 const { injectStealthScripts, humanDelay, humanScroll, browsePageLikeHuman, humanClick, setRealisticFingerprint, detectAntiBot } = require('./stealth-utils')
@@ -108,9 +110,146 @@ async function accountDetectProxy(tab) {
 async function publishNote(conn, params) {
   const tab = await findXhsTab(conn)
   if (!tab) return { error: 'no_xhs_tab' }
-  if (tab.mode === 'proxy') return { error: 'publish not supported in proxy mode' }
+  const { title = '', content = '', hashtags = [], cover_prompt = '' } = params
+
+  if (tab.mode === 'proxy') {
+    const { proxyUrl, targetId } = tab
+    const base = proxyUrl
+    const tid = targetId
+
+    console.log('[xhs] 使用 targetId:', tid)
+
+    // 导航到发布页面
+    await fetch(`${base}/navigate?target=${tid}&url=${encodeURIComponent('https://creator.xiaohongshu.com/publish/publish?source=official')}`)
+    await new Promise(r => setTimeout(r, 3000))
+
+    // 点击"上传图文" tab
+    const clickTabJs = `(() => {
+      const tabs = Array.from(document.querySelectorAll('[class*=tab]'));
+      const tab = tabs.find(el => el.textContent.trim() === '上传图文' && el.className.includes('creator-tab'));
+      if (tab) { tab.click(); return 'clicked'; }
+      return 'not_found';
+    })()`
+    const clickResult = await (await fetch(`${base}/eval?target=${tid}`, { method: 'POST', body: clickTabJs })).json()
+    console.log('[xhs] 点击上传图文:', clickResult.result || clickResult.value)
+    await new Promise(r => setTimeout(r, 2000))
+
+    // 生成并上传封面图
+    let imagePath = null
+    if (cover_prompt) {
+      console.log('[xhs] 生成封面图:', cover_prompt)
+      imagePath = await generateImage(cover_prompt)
+    }
+
+    // 如果没有生成图片，使用 1x1 像素的占位图
+    if (!imagePath) {
+      console.log('[xhs] 使用占位图')
+      const placeholderPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64')
+      imagePath = '/tmp/placeholder.png'
+      fs.writeFileSync(imagePath, placeholderPng)
+    }
+
+    // 上传图片
+    const imageBuffer = fs.readFileSync(imagePath)
+    const base64 = imageBuffer.toString('base64')
+
+    const uploadJs = `(() => {
+      const input = document.querySelector('input[type=file][accept*=".jpg"]');
+      if (!input) return 'no_input';
+
+      const dataUrl = 'data:image/png;base64,${base64}';
+      fetch(dataUrl)
+        .then(r => r.blob())
+        .then(blob => {
+          const file = new File([blob], 'cover.png', {type: 'image/png'});
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          input.files = dt.files;
+          input.dispatchEvent(new Event('change', {bubbles: true}));
+        });
+      return 'uploaded';
+    })()`
+
+    await fetch(`${base}/eval?target=${tid}`, { method: 'POST', body: uploadJs })
+    await new Promise(r => setTimeout(r, 5000))
+    console.log('[xhs] 图片已上传')
+
+    // 清理临时文件
+    if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath)
+
+    // 填写标题
+    const fillTitleJs = `(() => {
+      const input = document.querySelector('input[placeholder*="标题"]') || document.querySelector('input[placeholder*="填写标题"]');
+      if (input) {
+        input.focus();
+        input.value = ${JSON.stringify(title)};
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        input.dispatchEvent(new Event('change', {bubbles: true}));
+        return true;
+      }
+      return false;
+    })()`
+    const titleResult = await (await fetch(`${base}/eval?target=${tid}`, { method: 'POST', body: fillTitleJs })).json()
+    console.log('[xhs] 填写标题:', titleResult.result || titleResult.value)
+    await new Promise(r => setTimeout(r, 1000))
+
+    // 填写内容
+    const fillContentJs = `(() => {
+      const editor = document.querySelector('.ql-editor') || document.querySelector('[contenteditable="true"]') || document.querySelector('textarea');
+      if (editor) {
+        editor.focus();
+        if (editor.tagName === 'TEXTAREA') {
+          editor.value = ${JSON.stringify(content)};
+          editor.dispatchEvent(new Event('input', {bubbles: true}));
+        } else {
+          editor.innerHTML = ${JSON.stringify(content.replace(/\n/g, '<br>'))};
+          editor.dispatchEvent(new Event('input', {bubbles: true}));
+        }
+        return true;
+      }
+      return false;
+    })()`
+    const contentResult = await (await fetch(`${base}/eval?target=${tid}`, { method: 'POST', body: fillContentJs })).json()
+    console.log('[xhs] 填写内容:', contentResult.result || contentResult.value)
+    await new Promise(r => setTimeout(r, 2000))
+
+    // 点击发布按钮
+    const publishJs = `(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('发布') && !b.disabled);
+      if (btn) { btn.click(); return true; }
+      return false;
+    })()`
+    const publishResult = await (await fetch(`${base}/eval?target=${tid}`, { method: 'POST', body: publishJs })).json()
+    console.log('[xhs] 点击发布:', publishResult.result || publishResult.value)
+    await new Promise(r => setTimeout(r, 5000))
+
+    // 验证发布结果并获取帖子 URL
+    const verifyJs = `(() => {
+      const success = document.body.textContent.includes('发布成功') || document.body.textContent.includes('审核中');
+      const currentUrl = window.location.href;
+      // 尝试从页面中提取帖子链接
+      let noteUrl = null;
+      if (currentUrl.includes('/user/profile')) {
+        // 在个人主页，尝试找到最新发布的笔记
+        const noteLinks = Array.from(document.querySelectorAll('a[href*="/explore/"]'));
+        if (noteLinks.length > 0) {
+          noteUrl = noteLinks[0].href;
+        }
+      } else if (currentUrl.includes('/explore/')) {
+        // 已经在笔记详情页
+        noteUrl = currentUrl;
+      }
+      return {success, url: currentUrl, noteUrl};
+    })()`
+    const verifyResult = await (await fetch(`${base}/eval?target=${tid}`, { method: 'POST', body: verifyJs })).json()
+    console.log('[xhs] 验证结果:', verifyResult.result || verifyResult.value)
+
+    const success = verifyResult.result?.success || verifyResult.value?.success
+    const noteUrl = verifyResult.result?.noteUrl || verifyResult.value?.noteUrl
+    return { published: success, title, platform_url: noteUrl, mode: 'proxy' }
+  }
+
   const page = tab.page
-  const { title = '', content = '' } = params
   await page.goto('https://creator.xiaohongshu.com/publish/publish', { waitUntil: 'networkidle2', timeout: 30000 })
   await humanDelay(2000, 4000)
   const titleEl = await page.$('[class*="title"] input, [placeholder*="标题"]')
@@ -121,8 +260,22 @@ async function publishNote(conn, params) {
   await humanDelay(1000, 3000)
   const btn = await page.$('[class*="publish"] button, button[class*="submit"]')
   if (btn) await btn.click()
-  await humanDelay(2000, 4000)
-  return { published: true, title }
+  await humanDelay(5000, 8000)
+
+  // 获取发布后的 URL
+  const currentUrl = page.url()
+  let noteUrl = null
+  if (currentUrl.includes('/explore/')) {
+    noteUrl = currentUrl
+  } else if (currentUrl.includes('/user/profile')) {
+    // 尝试从个人主页获取最新笔记链接
+    const noteLinks = await page.$$('a[href*="/explore/"]')
+    if (noteLinks.length > 0) {
+      noteUrl = await noteLinks[0].evaluate(el => el.href)
+    }
+  }
+
+  return { published: true, title, platform_url: noteUrl, mode: 'puppeteer' }
 }
 
 async function likeNote(conn, params) {
@@ -437,4 +590,73 @@ async function xhsScanCommentsProxy(tab, keyword, maxNotes, maxComments) {
   return { keyword, notes: notes.length, comments: allComments }
 }
 
-module.exports = { xhsLoginWait, accountDetect, publishNote, likeNote, replyComment, followUser, xhsScanComments }
+// 关键词采集：搜索结果列表（不深入评论），复用已登录 tab
+async function xhsCrawlKeyword(conn, params) {
+  const { keyword, limit = 10 } = params
+  if (!keyword) return { error: 'keyword required' }
+  console.log(`[xhs] 关键词采集: "${keyword}", limit=${limit}`)
+
+  const tab = await findXhsTab(conn)
+  if (!tab) return { error: 'no_xhs_tab', items: [] }
+
+  const searchUrl = `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(keyword)}&source=web_search_result_notes`
+
+  if (tab.mode === 'puppeteer') {
+    await injectStealthScripts(tab.page)
+    await tab.page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 20000 })
+    await humanDelay(3000, 5000)
+    const isBlocked = await detectAntiBot(tab.page)
+    if (isBlocked) return { error: 'anti_bot_detected', items: [] }
+
+    const items = await tab.page.evaluate((max) => {
+      const notes = document.querySelectorAll('section.note-item')
+      const results = []
+      notes.forEach((note, i) => {
+        if (i >= max) return
+        const a = note.querySelector('a[href*=explore]')
+        const noteId = a?.href?.match(/explore\/([a-f0-9]+)/)?.[1] || ''
+        const title = note.querySelector('a.title span, .title')?.textContent?.trim() || ''
+        const author = note.querySelector('.card-bottom-wrapper .author .name, .author-wrapper .name')?.textContent?.trim() || ''
+        const authorUrl = note.querySelector('.card-bottom-wrapper .author, .author-wrapper a')?.href || ''
+        const likes = parseInt(note.querySelector('.like-wrapper .count, span.count')?.textContent?.trim()) || 0
+        const cover = note.querySelector('a.cover img')?.src || ''
+        if (!noteId || !title) return
+        results.push({ noteId, title, author, authorUrl, likes, cover, url: 'https://www.xiaohongshu.com/explore/' + noteId })
+      })
+      return results
+    }, limit)
+    console.log(`[xhs] 采集到 ${items.length} 条笔记`)
+    return { keyword, items }
+  }
+
+  // proxy 模式
+  const base = tab.proxyUrl
+  const tid = tab.targetId
+  await fetch(`${base}/navigate?target=${tid}&url=${encodeURIComponent(searchUrl)}`)
+  await new Promise(r => setTimeout(r, 4000))
+  const js = `(() => {
+    const notes = document.querySelectorAll('section.note-item')
+    const results = []
+    notes.forEach((note, i) => {
+      if (i >= ${limit}) return
+      const a = note.querySelector('a[href*=explore]')
+      const noteId = a?.href?.match(/explore\\/([a-f0-9]+)/)?.[1] || ''
+      const title = note.querySelector('a.title span, .title')?.textContent?.trim() || ''
+      const author = note.querySelector('.card-bottom-wrapper .author .name, .author-wrapper .name')?.textContent?.trim() || ''
+      const authorUrl = note.querySelector('.card-bottom-wrapper .author, .author-wrapper a')?.href || ''
+      const likes = parseInt(note.querySelector('.like-wrapper .count, span.count')?.textContent?.trim()) || 0
+      const cover = note.querySelector('a.cover img')?.src || ''
+      if (!noteId || !title) return
+      results.push({ noteId, title, author, authorUrl, likes, cover, url: 'https://www.xiaohongshu.com/explore/' + noteId })
+    })
+    return JSON.stringify(results)
+  })()`
+  const r = await fetch(`${base}/eval?target=${tid}`, { method: 'POST', body: js })
+  const data = await r.json()
+  const raw = data.result || data.value || '[]'
+  const items = typeof raw === 'string' ? JSON.parse(raw) : raw
+  console.log(`[xhs] 采集到 ${items.length} 条笔记`)
+  return { keyword, items }
+}
+
+module.exports = { xhsLoginWait, accountDetect, publishNote, likeNote, replyComment, followUser, xhsScanComments, xhsCrawlKeyword }

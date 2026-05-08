@@ -3,8 +3,8 @@
 const { humanDelay, browsePageLikeHuman } = require('./human-behavior')
 
 const PLATFORM_TASKS = new Set([
-  'xhs_login_wait', 'account_detect', 'publish_note', 'reply_comment', 'like_note', 'follow_user', 'xhs_scan_comments',
-  'dy_login_wait', 'dy_account_detect', 'dy_publish_note', 'dy_scan_comments',
+  'xhs_login_wait', 'account_detect', 'publish_note', 'reply_comment', 'like_note', 'follow_user', 'xhs_scan_comments', 'xhs_crawl_keyword',
+  'dy_login_wait', 'dy_account_detect', 'dy_publish_note', 'dy_scan_comments', 'dy_crawl_keyword',
   'wxvideo_login_wait', 'wxvideo_account_detect', 'wxvideo_publish',
   'ks_login_wait', 'ks_account_detect', 'ks_publish_note',
 ])
@@ -142,7 +142,7 @@ async function executePlatformTask(conn, task) {
     let handler, mod
     if (task_type.startsWith('dy_')) {
       mod = require('./dy-tasks')
-      handler = { dy_login_wait: mod.dyLoginWait, dy_account_detect: mod.dyAccountDetect, dy_publish_note: mod.dyPublishNote, dy_scan_comments: mod.dyScanComments }[task_type]
+      handler = { dy_login_wait: mod.dyLoginWait, dy_account_detect: mod.dyAccountDetect, dy_publish_note: mod.dyPublishNote, dy_scan_comments: mod.dyScanComments, dy_crawl_keyword: mod.dyCrawlKeyword }[task_type]
     } else if (task_type.startsWith('wxvideo_')) {
       mod = require('./wxvideo-tasks')
       handler = { wxvideo_login_wait: mod.wxvideoLoginWait, wxvideo_account_detect: mod.wxvideoAccountDetect, wxvideo_publish: mod.wxvideoPublish }[task_type]
@@ -151,7 +151,7 @@ async function executePlatformTask(conn, task) {
       handler = { ks_login_wait: mod.ksLoginWait, ks_account_detect: mod.ksAccountDetect, ks_publish_note: mod.ksPublishNote }[task_type]
     } else {
       mod = require('./xhs-tasks')
-      handler = { xhs_login_wait: mod.xhsLoginWait, account_detect: mod.accountDetect, publish_note: mod.publishNote, reply_comment: mod.replyComment, like_note: mod.likeNote, follow_user: mod.followUser, xhs_scan_comments: mod.xhsScanComments }[task_type]
+      handler = { xhs_login_wait: mod.xhsLoginWait, account_detect: mod.accountDetect, publish_note: mod.publishNote, reply_comment: mod.replyComment, like_note: mod.likeNote, follow_user: mod.followUser, xhs_scan_comments: mod.xhsScanComments, xhs_crawl_keyword: mod.xhsCrawlKeyword }[task_type]
     }
     if (!handler) return { success: false, data: { error: `no handler: ${task_type}` } }
     const result = await handler(conn, task.params || task)

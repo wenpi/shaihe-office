@@ -238,4 +238,51 @@ async function dyScanComments(conn, params) {
   return { keyword, notes: cards.length, comments: allComments }
 }
 
-module.exports = { dyLoginWait, dyAccountDetect, dyPublishNote, dyScanComments }
+// 关键词采集：搜索结果列表（不深入评论），复用已有抖音 tab
+async function dyCrawlKeyword(conn, params) {
+  const { keyword, limit = 10 } = params
+  if (!keyword) return { error: 'keyword required' }
+  console.log(`[dy] 关键词采集: "${keyword}", limit=${limit}`)
+
+  const tab = createTab(conn)
+  const searchUrl = `https://www.douyin.com/search/${encodeURIComponent(keyword)}?type=video`
+  const found = await tab.findTab('douyin.com')
+  if (found) {
+    await tab.eval(`window.location.href = '${searchUrl}'`)
+  } else {
+    await tab.goto(searchUrl)
+  }
+  await tab.wait(5000)
+
+  const riskCheck = await tab.eval(`(() => {
+    return document.body.textContent.includes('验证') ||
+           document.querySelector('[class*="captcha"], [class*="verify"]') !== null
+  })()`)
+  if (riskCheck) {
+    await tab.close()
+    return { error: 'risk_control', items: [] }
+  }
+
+  const raw = await tab.eval(`(() => {
+    const cards = document.querySelectorAll('.search-result-card, [class*="search-card"], [class*="video-card"]')
+    const r = []
+    cards.forEach((card, i) => {
+      if (i >= ${limit}) return
+      const a = card.querySelector('a[href*="video"]')
+      const videoId = a?.href?.match(/video\\/(\\d+)/)?.[1] || ''
+      const title = card.querySelector('.VDYK8Xd7, [class*="desc"], [class*="title"]')?.textContent?.trim()?.slice(0, 100) || ''
+      const author = card.querySelector('.MZNczJmS, [class*="author"], [class*="nickname"]')?.textContent?.trim() || ''
+      const likes = parseInt(card.querySelector('[class*="like"], [class*="count"]')?.textContent?.replace(/[^0-9]/g, '')) || 0
+      if (!videoId) return
+      r.push({ videoId, title, author, likes, url: 'https://www.douyin.com/video/' + videoId })
+    })
+    return JSON.stringify(r)
+  })()`)
+
+  await tab.close()
+  const items = JSON.parse(raw || '[]')
+  console.log(`[dy] 采集到 ${items.length} 条视频`)
+  return { keyword, items }
+}
+
+module.exports = { dyLoginWait, dyAccountDetect, dyPublishNote, dyScanComments, dyCrawlKeyword }
