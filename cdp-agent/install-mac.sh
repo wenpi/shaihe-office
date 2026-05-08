@@ -45,6 +45,7 @@ curl -sL "$CDN_BASE/lib/feishu-auth.js"        -o "$INSTALL_DIR/lib/feishu-auth.
 curl -sL "$CDN_BASE/lib/dy-tasks.js"           -o "$INSTALL_DIR/lib/dy-tasks.js"
 curl -sL "$CDN_BASE/lib/ks-tasks.js"           -o "$INSTALL_DIR/lib/ks-tasks.js"
 curl -sL "$CDN_BASE/lib/wxvideo-tasks.js"      -o "$INSTALL_DIR/lib/wxvideo-tasks.js"
+curl -sL "$CDN_BASE/lib/image-generator.js"    -o "$INSTALL_DIR/lib/image-generator.js"
 echo "[✓] 文件下载完成"
 
 # 4. 安装依赖
@@ -57,7 +58,8 @@ cat > package.json << 'PKGJSON'
   "private": true,
   "dependencies": {
     "puppeteer-core": "^24.0.0",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "replicate": "^0.34.1"
   }
 }
 PKGJSON
